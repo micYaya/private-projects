@@ -28,8 +28,9 @@ export const useLoginStore = defineStore('login', {
     // 页面刷新时在本地存储中找用户信息
     initUserInfo() {
       const userInfo = localStorage.getItem('user');
-      if (userInfo) {
+      if (userInfo !== undefined && userInfo !== null) {
         this.userInfo = JSON.parse(userInfo);
+        console.log('状态管理里的userinfo：', this.userInfo);
       }
     },
     setLogin(userinfo = null) {

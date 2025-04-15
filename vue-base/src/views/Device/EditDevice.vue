@@ -6,7 +6,7 @@
         <button @click="closeModal">×</button>
       </div>
       <div class="modal-content">
-        <DeviceForm :deviceInfo="props.deviceInfo" />
+        <DeviceForm :deviceInfo="props.deviceInfo" ref="formRef" />
       </div>
       <div class="modal-footer">
         <el-button type="primary" @click="saveDevice">保存</el-button> <!-- 绑定保存事件 -->
@@ -17,11 +17,11 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue';
 import { format } from 'date-fns';
-import axios from 'axios';
 import { edit_device } from '@/api/request.js';
 import DeviceForm from './components/DeviceForm.vue';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   deviceInfo: {
@@ -40,34 +40,40 @@ const closeModal = () => {
   emits('close');
 };
 
+const formRef = ref(null);
+
 // 处理日期格式并保存
 const saveDevice = async () => {
-  console.log(props.deviceInfo)
-  if (props.deviceInfo.id) { // 假设后端编辑接口需要设备ID
-    // 格式化日期
-    if (props.deviceInfo.manufactureDate) {
-      props.deviceInfo.manufactureDate = format(
-        props.deviceInfo.manufactureDate,
-        'yyyy-MM-dd HH:mm:ss'
-      );
-    }
-    if (props.deviceInfo.inspectionDate) {
-      props.deviceInfo.inspectionDate = format(
-        props.deviceInfo.inspectionDate,
-        'yyyy-MM-dd HH:mm:ss'
-      );
-    }
+  formRef.value.formRef.validate(async (valid) => {
+    if (valid) {
+      if (props.deviceInfo.id) {
+        if (props.deviceInfo.manufactureDate) {
+          props.deviceInfo.manufactureDate = format(
+            props.deviceInfo.manufactureDate,
+            'yyyy-MM-dd HH:mm:ss'
+          );
+        }
+        if (props.deviceInfo.inspectionDate) {
+          props.deviceInfo.inspectionDate = format(
+            props.deviceInfo.inspectionDate,
+            'yyyy-MM-dd HH:mm:ss'
+          );
+        }
 
-    try {
-      // 发送PUT请求到后端（假设后端编辑接口为 /api/devices/:id）
-      // await api.put(`/api/devices/${props.deviceInfo.id}`, props.deviceInfo);
-      await edit_device(props.deviceInfo)
-      emits('close');
-      emits('refresh'); // 通知父组件刷新数据
-    } catch (error) {
-      console.error('编辑设备信息失败', error);
+        try {
+          await edit_device(props.deviceInfo);
+          emits('close');
+          emits('refresh');
+        } catch (error) {
+          console.error('编辑设备信息失败', error);
+        }
+      }
+    } else {
+      ElMessage.error('表单验证不通过，请检查输入信息')
+      // console.log('验证不通过');
+      return false;
     }
-  }
+  });
 };
 </script>
 

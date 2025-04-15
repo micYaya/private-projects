@@ -25,22 +25,6 @@
         </template>
       </li>
 
-      <!-- <li><el-icon><Menu /></el-icon>
-        <span v-if="!isCollapsed">实验任务管理</span>
-          <ul>
-            <li 
-              @click="goToPage('/task-info')" 
-              :class="[{ 'active': currentPath === '/home/task-info' }, 'li-hover']"
-              v-if="!isCollapsed"
-            ><el-icon><Menu /></el-icon>任务管理</li>
-            <li 
-              @click="goToPage('/result-info')" 
-              :class="[{ 'active': currentPath === '/home/result-info' }, 'li-hover']"
-              v-if="!isCollapsed"
-              ><el-icon><Menu /></el-icon>结果管理</li>
-          </ul>
-      </li> -->
-
       <!-- 多级：实验任务管理 -->
       <el-popover
         v-if="props.isCollapsed"

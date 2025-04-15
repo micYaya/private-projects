@@ -32,8 +32,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import dayjs from 'dayjs';
-import { getDeviceList, getTaskList, getInspectionItems, getResults, getDevicesMonth } from '@/api/request.js';
-import BaseChart from './BaseChart.vue'
+import { getDeviceList, getTasks, getInspectionItems, getResults, getDevicesMonth } from '@/api/request.js';
+import BaseChart from './BaseChart.vue';
 
 // 统计数据
 const statisticCounts = ref({
@@ -73,7 +73,7 @@ const fetchStatistics = async () => {
     // 任务数量
     // const taskRes = await api.get('/api/tasks');
     // statisticCounts.value.task = taskRes.data.length;
-    const taskRes = await getTaskList();
+    const taskRes = await getTasks();
     statisticCounts.value.task = taskRes.length;
 
     // 实验项目数量
@@ -128,7 +128,11 @@ const fetchStatistics = async () => {
       series: [{
         type: 'pie',
         radius: ['50%', '70%'],
-        label: { formatter: `{c} (${completedDeviceRatio.value.toFixed(1)}%)` },
+        label: { 
+          formatter: `${completedDeviceRatio.value.toFixed(1)}%`,
+          fontSize: '3rem',
+          position: 'center'
+        },
         data: [
           { value: completedDeviceRatio.value, name: '已完成任务设备' },
           { value: 100 - completedDeviceRatio.value, name: '未完成任务设备' }
@@ -143,12 +147,23 @@ const fetchStatistics = async () => {
       series: [{
         data: dailyInspectionData.value.map(item => item.count),
         type: 'line'
-      }]
+      }],
+      tooltip: {
+        // trigger: 'axis',
+        show: true
+      }
     };
 
     pieChartOption.value = {
       title: { text: '实验项目分类统计', left: 'center' },
-      series: [{ type: 'pie', data: projectCategoryData.value }]
+      series: [{ 
+        type: 'pie', 
+        data: projectCategoryData.value
+      }],
+      tooltip: {
+      // trigger: 'item',
+      show: true
+    } 
     };
 
   } catch (error) {
@@ -238,7 +253,7 @@ onMounted(() => {
   width: 20vw;
   height: 5vw;
   font-size: 2.2vw;
-  background: #f5f5f5;
+  background: #fff;
   padding: 1vw;
   border-radius: 0.5vw;
   display: flex;

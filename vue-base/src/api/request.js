@@ -44,6 +44,17 @@ export const delete_device = async (id) => {
   }
 };
 
+// 更新设备检测状态，任务状态变成“已完成”时，就算检测完成
+export const updateDeviceStatus = async (deviceId, status) => {
+  try {
+    const response = await api.put(`/api/devices/${deviceId}/status`, { deviceStatus: status });
+    return response.data;
+  } catch (error) {
+    console.error('更新设备状态失败', error);
+    throw error;
+  }
+};
+
 // 获取结果列表
 export const getResults = async () => {
   try {
@@ -127,10 +138,20 @@ export const delete_inspectionItem = async (itemId) => {
   }
 };
 
-// 获取任务列表（不包含实验项目数量）
+// 获取设备任务
 export const getTaskList = async (id) => {
   try {
     const response = await api.get(`/api/tasks?deviceId=${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('获取任务列表失败', error);
+    throw error;
+  }
+};
+// 获取任务列表
+export const getTasks = async () => {
+  try {
+    const response = await api.get(`/api/tasks`);
     return response.data;
   } catch (error) {
     console.error('获取任务列表失败', error);
@@ -196,7 +217,7 @@ export const delete_task = async (taskId) => {
 // 执行 OCR 实验
 export const performOcr = async (deviceId) => {
   try {
-    const response = await api.post('/api/perform-ocr', { deviceId });
+    const response = await api.post('/api/perform-ocr', { deviceId: deviceId });
     return response.data;
   } catch (error) {
     console.error('执行 OCR 实验失败', error);

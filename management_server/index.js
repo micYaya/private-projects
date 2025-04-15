@@ -1,12 +1,11 @@
 var express = require('express');
 var router = express.Router();
-const md5 = require('blueimp-md5')
 const sms_util = require('./utils/sms_util')
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('./config');
-const cookie = require('cookie');
+// const cookie = require('cookie');
 
 // 内存存储验证码（临时数据，无需持久化）
 const users = {}
@@ -97,6 +96,17 @@ router.post('/api/login_sms', async (req, res) => {
     usersInfo[userIndex].lastLogin = Date.now();
     targetUser = usersInfo[userIndex];
 
+    // 短期accessToken，长期refresToken
+    const accessToken = jwt.sign(
+      { id: targetUser.id, nickname: targetUser.nickname },
+      config.config.jwtSecretKey,
+      { expiresIn: '10s' } // accessToken 有效期短
+    );
+    const refreshToken = jwt.sign(
+      { id: targetUser.id },
+      config.config.jwtSecretKey,
+      { expiresIn: '1d' } // refreshToken 更长
+    );
     // 设置 session
     req.session.user = {
       id: targetUser.id,
@@ -104,13 +114,20 @@ router.post('/api/login_sms', async (req, res) => {
       password: targetUser.password,
       creatTime: targetUser.creatTime,
       lastLogin: targetUser.lastLogin,
-      nickname: targetUser.nickname
+      nickname: targetUser.nickname,
+      accessToken,
+      refreshToken
     };
 
-    // 写入文件（带排他锁防止并发冲突）
+    // 写入文件
     try {
       await writeUsers(usersInfo);
+
+      console.log('短信登录：开始发送accessToken和refreshToken');
       res.send({ code: 0, data: req.session.user });
+      console.log('短信登录：refreshToken发送成功');
+      // console.log(accessToken);
+      // console.log(refreshToken);
     } catch (error) {
       console.error('保存用户文件失败:', error.message);
       res.status(500).send({ code: 1, msg: '服务器内部错误' });
@@ -118,35 +135,6 @@ router.post('/api/login_sms', async (req, res) => {
   } else {
     res.send({ code: 1, msg: '系统未注册过该手机号码，请检查' });
   }
-  // 应该只给系统已绑定的管理员用户提供登录接口
-  // else {
-  //   // 新用户，添加基础信息
-  //   const newUser = {
-  //     id: Date.now().toString(), // 生成唯一ID（时间戳）
-  //     phone,
-  //     createTime: Date.now(),
-  //     lastLogin: Date.now(),
-  //     nickname: `admin${phone.slice(-4)}`
-  //   };
-  //   usersInfo.push(newUser);
-  //   targetUser = newUser;
-  // }
-
-  // // 设置 session
-  // req.session.user = {
-  //   id: targetUser.id,
-  //   phone: targetUser.phone,
-  //   nickname: targetUser.nickname
-  // };
-
-  // // 写入文件（带排他锁防止并发冲突）
-  // try {
-  //   await writeUsers(usersInfo);
-  //   res.send({ code: 0, data: req.session.user });
-  // } catch (error) {
-  //   console.error('保存用户文件失败:', error.message);
-  //   res.status(500).send({ code: 1, msg: '服务器内部错误' });
-  // }
 })
 
 /*
@@ -258,25 +246,7 @@ router.get('/api/check_user', async (req, res) => {
     // 验证密码
     const compareResult = bcrypt.compareSync(password, targetUser.password);
 
-    // if (targetUser.password === password) {
-    //   res.send({ code: 0, data: {
-    //     phone: targetUser.phone,
-    //     lastLogin: targetUser.lastLogin
-    //   } });
-    // }
     if (compareResult) {
-      // const tokenStr = jwt.sign(
-      //   { id: targetUser.id, nickname: targetUser.nickname },
-      //   config.config.jwtSecretKey,
-      //   { expiresIn: rememberMe ? '7d' : '10s' }
-      // );
-
-      // res.send({ code: 0, data: {
-      //   phone: targetUser.phone,
-      //   lastLogin: targetUser.lastLogin,
-      //   token: tokenStr
-      // } });
-
       // 短期accessToken，长期refresToken
       const accessToken = jwt.sign(
         { id: targetUser.id, nickname: targetUser.nickname },

@@ -14,6 +14,7 @@
           v-model="searchKeyword"
           placeholder="请输入关联设备编号"
           style="width: 300px; margin-right: 10px;"
+          @keyup.enter="searchResults"
         />
         <el-button type="primary" @click="searchResults">搜索</el-button>
       </div>
@@ -188,7 +189,8 @@ const selectable = (row, index) => {
 // 搜索结果方法
 const searchResults = async () => {
   // const response = await api.get('/api/results');
-    const filtered = await getResults().filter((result) =>
+  const response = await getResults();
+    const filtered = response.filter((result) =>
       String(result.deviceId).includes(searchKeyword.value)
     );
     fullResultList.value = filtered;

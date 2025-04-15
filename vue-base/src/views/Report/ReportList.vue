@@ -12,6 +12,7 @@
           v-model="searchDeviceId"
           placeholder="请输入设备编号"
           style="width: 300px; margin-right: 10px;"
+          @keyup.enter="searchReports"
         />
         <el-button type="primary" @click="searchReports">搜索</el-button>
       </div>
@@ -96,18 +97,19 @@ import { ElMessageBox } from 'element-plus';
 import { getDeviceList, getReport, getTaskList } from '@/api/request.js';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
-import { autoTable } from 'jspdf-autotable';
+// import { autoTable } from 'jspdf-autotable';
 
-import '@/static/fonts/SourceHanSansCN-Normal-normal.js'; // 引入字体文件
+import '@/static/fonts/SourceHanSansCN-Normal-normal.js'; // 引入中文字体文件
 
+// 用于骨架屏
 const loading = ref(false);
 
 // 报表列表
 const reportList = ref([]);
-// 用于显示的报表列表
-const displayReportList = ref([]);
 // 搜索关键字
 const searchDeviceId = ref('');
+// 过滤得到的报表列表
+const filteredReportList = ref([]);
 // 当前页码
 const currentPage = ref(1);
 // 每页数量
@@ -140,12 +142,9 @@ const fetchReports = async () => {
     // const devices = response.data;
 
     const devices = await getDeviceList();
-    
-    const pagedDevices = devices.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
-    total.value = devices.length;
 
     // 再通过设备Id获得实验数据:status、endTime
-    const tasksPromises = pagedDevices.map(async (device) => {
+    const tasksPromises = devices.map(async (device) => {
       // const taskResponse = await api.get(`/api/tasks?deviceId=${device.deviceId}`);
       // const task = taskResponse.data[0]; // 每个设备对应一个任务
 
@@ -160,10 +159,11 @@ const fetchReports = async () => {
     });
 
     const reportsWithTaskInfo = await Promise.all(tasksPromises);
-    displayReportList.value = reportsWithTaskInfo;
     
-    // reportList.value = reportsWithTaskInfo;
-    // total.value = reportList.value.length;
+    reportList.value = reportsWithTaskInfo;
+    // 初始化过滤列表
+    filteredReportList.value = reportsWithTaskInfo;
+    total.value = reportList.value.length;
   } catch (error) {
     console.error('获取报表列表失败', error);
   } finally {
@@ -171,13 +171,14 @@ const fetchReports = async () => {
   }
 };
 
-// 分页展示的列表
+// 分页展示列表
 const paginatedReportList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
-  return displayReportList.value.slice(start, end);
+  return filteredReportList.value.slice(start, end);
 });
-// 查看报表方法
+
+// 查看报表
 const viewReport = async (row) => {
   try {
     // 获取组合报表数据
@@ -302,14 +303,14 @@ const printReport = async (row) => {
 
 const handleSelectionChange = (rows) => {
   selectedRows.value = rows;
-  isIndeterminate.value = rows.length > 0 && rows.length < displayReportList.value.length;
-  if (rows.length === displayReportList.value.length) {
+  isIndeterminate.value = rows.length > 0 && rows.length < paginatedReportList.value.length;
+  if (rows.length === paginatedReportList.value.length) {
     isIndeterminate.value = false;
   }
 };
 
 const handleSelectAll = (selection) => {
-  if (selection.length === displayReportList.value.length) {
+  if (selection.length === paginatedReportList.value.length) {
     isIndeterminate.value = false;
   } else if (selection.length > 0) {
     isIndeterminate.value = true;
@@ -325,14 +326,16 @@ const selectable = (row, index) => {
 
 // 搜索报表方法
 const searchReports = () => {
-  if (searchDeviceId.value === '') {
-    displayReportList.value = reportList.value;
-  } else {
-    displayReportList.value = reportList.value.filter(report => 
+  // 根据 searchDeviceId 过滤 reportList
+  if (searchDeviceId.value) {
+    filteredReportList.value = reportList.value.filter((report) =>
       report.deviceId.includes(searchDeviceId.value)
     );
+  } else {
+    filteredReportList.value = reportList.value; // 如果搜索框为空，显示所有数据
   }
-  total.value = displayReportList.value.length;
+
+  total.value = filteredReportList.value.length; // 更新总条数
   currentPage.value = 1; // 重置页码
 };
 

@@ -82,27 +82,6 @@ const router = createRouter({
     routes
 });
 
-// // 添加路由守卫，限制未登录的用户访问系统
-// router.beforeEach((to, from, next) => {
-//     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-//     const loginStore = useLoginStore();
-
-//     // 即使token存在，但当退出登录时，也不能够再直接访问系统主页面了
-//     if (to.meta.requiresAuth && (!token || !loginStore.isLoggedIn)) {
-//         // 没有登录，弹窗提示并跳转登录页
-//         ElMessageBox.alert('您没有权限访问该页面，请先登录！', '权限提示', {
-//             confirmButtonText: '确定',
-//             callback: () => {
-//             next({ path: '/login' });  // 跳转到登录页
-//             }
-//         });
-//     } else {
-//     // 已登录或正在访问登录页
-//     next()
-//   }
-// })
-
-
 // 检查令牌是否过期
 function isTokenExpired(token) {
     if(!token) return true;
@@ -127,6 +106,7 @@ router.beforeEach(async (to, from, next) => {
         const rememberMe = localStorage.getItem('rememberMe') === 'true'
         const loginStore = useLoginStore()
         const userInfo = loginStore.getUserInfo;
+        console.log('路由守卫的userInfo：', userInfo);
         // 如果需要登录的页面
         if (to.meta.requiresAuth) {
             console.log(rememberMe);
@@ -146,8 +126,8 @@ router.beforeEach(async (to, from, next) => {
                     const newAccessToken = res.data.data.accessToken
                     if(rememberMe) {localStorage.setItem('accessToken', newAccessToken)}
                     else {sessionStorage.setItem('accessToken', newAccessToken)}
-                    loginStore.setLogin(true) // 标记为已登录
-                    loginStore.setUserInfo(userInfo) // 标记为已登录
+                    loginStore.setLogin(userInfo); // 标记为已登录
+                    localStorage.setItem('user', JSON.stringify(userInfo));
                     next()
                 } catch (err) {
                     console.error('刷新 token 失败', err)

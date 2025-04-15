@@ -55,6 +55,7 @@
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue';
 import { add_inspectionItem } from '@/api/request.js';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   isAddVisible: {
@@ -102,7 +103,31 @@ const handleProjectChange = () => {
   }
 };
 
+const validateData = () => {
+  const { project, gearValue, gearUnit, percentage, data_lower_limit, data_upper_limit, measured_data } = itemInfo.value;
+  if (!project ||!gearValue ||!gearUnit || percentage === null || data_lower_limit === null || data_upper_limit === null || measured_data === null) {
+    ElMessage.error('所有输入数据都不能为空');
+    return false;
+  }
+
+  const numFields = [percentage, data_lower_limit, data_upper_limit, measured_data, parseFloat(gearValue)];
+  for (const num of numFields) {
+    // 检查是否为有效的数字
+    if (isNaN(parseFloat(num)) ||!isFinite(num)) {
+      ElMessage.error('所有输入的数值数据必须是有效的数字');
+      return false;
+    }
+    // 检查是否为非负数
+    if (num < 0) {
+      ElMessage.error('所有输入的数值数据必须是非负数');
+      return false;
+    }
+  }
+  return true;
+};
+
 const saveItem = async () => {
+  if(!validateData()) return;
   itemInfo.value.task_id = props.taskId;
   itemInfo.value.gear = `${itemInfo.value.gearValue}${itemInfo.value.gearUnit}`;
   

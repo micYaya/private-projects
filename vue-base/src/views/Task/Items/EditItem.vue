@@ -48,6 +48,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 import { edit_inspectionItem } from '@/api/request.js';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   itemInfo: {
@@ -66,7 +67,22 @@ const closeModal = () => {
   emits('close');
 };
 
+const validateData = () => {
+  const { project, gear, percentage, data_lower_limit, data_upper_limit, measured_data, task_id } = props.itemInfo;
+  if (!project ||!gear || percentage === null || data_lower_limit === null || data_upper_limit === null || measured_data === null ||!task_id) {
+    ElMessage.error('所有输入数据都不能为空');
+    return false;
+  }
+  if (percentage <= 0 || data_lower_limit <= 0 || data_upper_limit <= 0 || measured_data <= 0) {
+    ElMessage.error('所有百分比、数据下限、数据上限和实测数据必须大于 0');
+    return false;
+  }
+  return true;
+};
+
 const saveItem = async () => {
+  if(!validateData()) return;
+
   if (props.itemInfo.item_id) {
     try {
 

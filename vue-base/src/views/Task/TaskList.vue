@@ -14,6 +14,7 @@
           v-model="searchKeyword"
           placeholder="请输入设备编号"
           style="width: 300px; margin-right: 10px;"
+          @keyup.enter="searchTasks"
         />
         <el-button type="primary" @click="searchTasks">搜索</el-button>
       </div>
@@ -58,7 +59,7 @@
       <el-table-column prop="item_count" label="实验项目数量" width="200"></el-table-column>
       <el-table-column label="操作" fixed="right" min-width="400">
         <template #default="scope">
-          <el-button type="primary" @click="goToItemList(scope.row.id, scope.row.deviceId)">实验项目管理</el-button>
+          <el-button type="primary" @click="goToItemList(scope.row.id, scope.row.deviceId, scope.row.status)">实验项目管理</el-button>
           <el-button type="warning" @click="confirmStartExperiment(scope.row)" :disabled="scope.row.status === '已完成'">发起实验</el-button>
           <el-button type="danger" @click="deleteConfirm(scope.row)">删除任务</el-button>
         </template>
@@ -87,7 +88,7 @@
 import { ref, watch, onMounted } from 'vue';
 import AddTask from './AddTask.vue';
 import { ElMessageBox } from 'element-plus';
-import { getTaskListWithItemCount, updateTaskStatus, performOcr, delete_task } from '@/api/request.js';
+import { getTaskListWithItemCount, updateTaskStatus, performOcr, delete_task, updateDeviceStatus } from '@/api/request.js';
 import { format } from 'date-fns';
 import { useRouter } from 'vue-router';
 
@@ -152,8 +153,8 @@ const addTask = () => {
 };
 
 // 实验项目管理
-const goToItemList = (taskId, deviceId) => {
-  router.push({ name: 'item-info', params: { taskId }, query: { deviceId } });
+const goToItemList = (taskId, deviceId, status) => {
+  router.push({ name: 'item-info', params: { taskId }, query: { deviceId, status } });
 };
 
 // 确认发起实验
@@ -216,6 +217,8 @@ const startExperiment = async (task) => {
         endTime: formattedEndTime,
         status: '已完成'
       });
+      // 更新设备状态
+      await updateDeviceStatus(task.deviceId, '检测完成');
 
       await fetchTasks(); // 强制刷新任务列表
     }, 5000);
@@ -267,10 +270,13 @@ const searchTasks = async () => {
 // 批量删除方法
 const batchDelete = async () => {
   try {
-    const ids = selectedRows.value.map((row) => row.id);
-    for (const id of ids) {
+    // const ids = selectedRows.value.map((row) => row.id);
+
+    for (const selectedTask of selectedRows.value) {
       // await api.delete(`/api/tasks/${id}`);
-      await delete_task(id);
+      // await delete_task(id);
+      await delete_task(selectedTask.id);
+      await updateDeviceStatus(selectedTask.deviceId, '未检测');
     }
     await fetchTasks();
   } catch (error) {
@@ -279,10 +285,12 @@ const batchDelete = async () => {
 };
 
 // 删除任务方法
-const deleteTask = async (id) => {
+const deleteTask = async (task) => {
   try {
     // await api.delete(`/api/tasks/${id}`);
-    await delete_task(id);
+    await delete_task(task.id);
+    // 删除完任务后，相关的设备状态、结果都得一起删掉
+    await updateDeviceStatus(task.deviceId, '未检测');
     await fetchTasks();
   } catch (error) {
     console.error('删除任务信息失败', error);
@@ -296,7 +304,8 @@ const deleteConfirm = (row) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    deleteTask(row.id);
+    deleteTask(row);
+    // deleteTask(row.id);
   }).catch(() => {
     // 用户取消操作
   });

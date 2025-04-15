@@ -13,6 +13,7 @@
           v-model="searchKeyword"
           placeholder="请输入设备名称"
           style="width: 300px; margin-right: 10px;"
+          @keyup.enter="searchDevices"
         />
         <el-button type="primary" @click="searchDevices">搜索</el-button>
       </div>
@@ -34,7 +35,6 @@
         :cell-style="{ textAlign: 'center' }"
         :header-cell-style="{ textAlign: 'center' }"
       >
-        <!-- 表格列定义不变 -->
         <el-table-column
           type="selection"
           width="50"
@@ -44,7 +44,7 @@
         ></el-table-column>
         <el-table-column prop="deviceId" label="设备ID" width="100"></el-table-column>
         <el-table-column prop="deviceName" label="设备名称" width="100"></el-table-column>
-        <el-table-column prop="deviceModel" label="设备型号" width="120"></el-table-column>
+        <el-table-column prop="deviceModel" label="设备型号" width="100"></el-table-column>
         <el-table-column prop="manufactureDate" label="生产日期" width="200">
           <template #default="scope">
             {{ formatDate(scope.row.manufactureDate) }}
@@ -164,8 +164,6 @@ const editDevice = (row) => {
   isEditVisible.value = true;
   // 刷新报表
   fetchDevices();
-  // 通知报表组件刷新
-  emits('refresh');
 };
 
 // 查看设备详情方法
@@ -202,7 +200,7 @@ const searchDevices = async () => {
   try {
     // const response = await api.get('/api/devices');
     const response = await getDeviceList();
-    const filtered = response.data.filter((device) =>
+    const filtered = response.filter((device) =>
       device.deviceName.includes(searchKeyword.value)
     );
 

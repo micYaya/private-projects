@@ -61,15 +61,16 @@ const initChart = () => {
   if (props.option) {
     // 设置响应式
     props.option.responsive = true;
+    // 应用配置
     chartInstance.setOption(props.option);
   }
 };
 
 // 调整图标尺寸
 const resizeChart = () => {
-    if (chartInstance) {
-        chartInstance.resize();
-    }
+  if (chartInstance) {
+    chartInstance.resize();
+  }
 };
 
 // 防抖，延迟300ms触发resize

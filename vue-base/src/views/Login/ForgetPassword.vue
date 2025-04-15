@@ -98,27 +98,12 @@ const dataRules = {
   ]
 }
 
-// const username = ref('')
-// const phone = ref('')
-// const verifyCode = ref('')
-// const password1 = ref('')
-// const password2 = ref('')
-// const errorMessage = ref('')
-// const computeTime = ref(60)
-
-const computeTime = ref(0)
+const computeTime = ref(60)
 const isCounting = computed(() => computeTime.value > 0)
 
 let intervalId = null;
 // 验证手机号有效性
 const isPhoneValid = computed(() => /^1\d{10}$/.test(formData.value.phone))
-
-// // 提示框
-// const isAlertVisible = ref(false)
-// const alertMessage = ref('')
-// const showAlert = (msg) => {
-//   ElMessage.warning(msg)
-// }
 
 // 倒计时逻辑
 const startCountdown = () => {
@@ -156,37 +141,6 @@ const getCode = async () => {
     // 验证失败自动显示错误信息
     console.log('获取密码失败：', error)
   }
-  // console.log('开始计时')
-  // // 如果当前没有计时
-  // if(computeTime.value === 60) {
-  //     // 启动倒计时
-  //     console.log("启动倒计时")
-  //     computeTime.value = 60
-  //     intervalId = setInterval(() => {
-  //         computeTime.value--
-  //         console.log('time: ', computeTime.value)
-  //         if(computeTime.value <= 0) {
-  //         // 停止计时
-  //         clearInterval(intervalId)
-  //         computeTime.value = 60
-  //         }
-  //     }, 1000)
-
-  //     console.log("开始问后端要验证码")
-  //     // 发送ajax请求(向指定手机号发送验证码短信)
-  //     const result = await reqSendCode(phone.value)
-  //     console.log(result)
-  //     if(result.code === 1) {
-  //         // 显示提示
-  //         showAlert(result.msg)
-  //         // 停止计时
-  //         if(computeTime.value) {
-  //             computeTime.value = 60
-  //             clearInterval(intervalId)
-  //             intervalId = null
-  //         }
-  //     }
-  // }
 }
 
 // 重置密码，检查验证码有效性和密码二次输入一致性
@@ -211,48 +165,6 @@ const reset = async () => {
     console.error('密码重置失败:', error)
     ElMessage.error('操作失败，请检查输入信息')
   }
-  // if (!isPhoneValid.value) {
-  //   showAlert(phone.value === '' ? '手机号不能为空' : '手机号不正确')
-  //   return
-  // }
-  // if (!/^\d{4}$/.test(verifyCode.value)) {
-  //   showAlert(verifyCode.value === '' ? '验证码不能为空' : '验证码必须是4位数字')
-  //   return
-  // }
-  // if (password1.value != password2.value) {
-  //   showAlert('两次密码输入不一致，请检查')
-  //   return
-  // }
-
-  // try {
-  //   // 发送ajax请求密码重置
-  //   const result = await resetPassword(phone.value, verifyCode.value, password1.value);
-  //   console.log('密码找回成功')
-  //   console.log(result)
-  //   if (result.code === 0) {
-  //       try{
-  //       await ElMessageBox.alert(
-  //           '密码重置成功，将返回系统登录界面',
-  //           '密码重置情况',
-  //           { confirmButtonText: '确定', type: 'success' }
-  //       );
-  //       router.push('/login');
-  //       } catch (error) {
-  //       console.error('提示框异常:', error);
-  //       }  
-  //   } else {
-  //     showAlert(result.msg);
-  //   }
-  // } catch (error) {
-  //   ElMessage.error('网络请求失败，请重试');
-  //   console.error('重置失败:', error);
-  // } finally {
-  //   // 停止计时
-  //   if (intervalId) {
-  //     clearInterval(intervalId);
-  //     computeTime.value = 60;
-  //   }
-  // }
 }
 
 const backToLogin = () => {

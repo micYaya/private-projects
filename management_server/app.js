@@ -36,7 +36,6 @@ app.use(indexRouter);
 // app.use(auth); // 全局挂载中间件后，下面所有 /api/* 路径均要求有效 token
 // // 受保护的数据接口
 
-
 // 创建数据库连接池
 const pool = mysql.createPool({
     host: 'localhost',
@@ -64,7 +63,7 @@ app.get('/api/devices/:deviceId', async (req, res) => {
     const [rows] = await pool.execute('SELECT * FROM devices WHERE deviceId = ?', [deviceId]);
     if (rows.length === 0) {
       console.log('该设备编号不存在');
-      return res.json({ error: '该设备编号不存在，请重新输入' });
+      return res.json({ exist: 0, error: '该设备编号不存在' });
     }
     res.json(rows[0]);
   } catch (error) {
@@ -76,21 +75,21 @@ app.get('/api/devices/:deviceId', async (req, res) => {
 
 // 添加设备信息
 app.post('/api/devices', async (req, res) => {
-    const { deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus } = req.body;
-    try {
-      // 先打印接收到的前端数据，确认数据是否正常
-      console.log('后端接收到的添加设备数据：', { deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus }); 
-      const [result] = await pool.execute(
-        'INSERT INTO devices (deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus) VALUES (?,?,?,?,?,?,?,?)',
-        [deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus]
-      );
-      res.status(201).json({ id: result.insertId, deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus });
-    } catch (error) {
-      // 打印完整的数据库错误信息
-      console.error('数据库插入错误详情：', error); 
-      res.status(500).json({ error: '添加设备信息失败' });
-    }
-  });
+  const { deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus } = req.body;
+  try {
+    // 先打印接收到的前端数据，确认数据是否正常
+    console.log('后端接收到的添加设备数据：', { deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus }); 
+    const [result] = await pool.execute(
+      'INSERT INTO devices (deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus) VALUES (?,?,?,?,?,?,?,?)',
+      [deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus]
+    );
+    res.status(201).json({ id: result.insertId, deviceId, deviceName, deviceModel, manufactureDate, inspectionDate, manufacturer, productionPlace, deviceStatus });
+  } catch (error) {
+    // 打印完整的数据库错误信息
+    console.error('数据库插入错误详情：', error); 
+    res.status(500).json({ error: '添加设备信息失败' });
+  }
+});
 
 // 更新设备信息
 app.put('/api/devices/:id', async (req, res) => {
@@ -106,6 +105,23 @@ app.put('/api/devices/:id', async (req, res) => {
         console.error('更新设备信息失败', error);
         res.status(500).json({ error: '更新设备信息失败' });
     }
+});
+
+// 更新设备检测状态
+app.put('/api/devices/:id/status', async (req, res) => {
+  const id = req.params.id;
+  const { deviceStatus } = req.body;
+
+  try {
+      await pool.execute(
+          'UPDATE devices SET deviceStatus = ? WHERE deviceId = ?',
+          [deviceStatus, id]
+      );
+      res.json({ id, deviceStatus });
+  } catch (error) {
+      console.error('更新设备检测状态失败', error);
+      res.status(500).json({ error: '更新设备检测状态失败' });
+  }
 });
 
 // 删除设备信息
@@ -243,6 +259,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
     }
 });
 
+// 获取任务里的实验项目数量
 app.get('/api/tasks/with-item-count', async (req, res) => {
   try {
     const [rows] = await pool.execute(`
@@ -263,7 +280,6 @@ app.get('/api/tasks/with-item-count', async (req, res) => {
     res.status(500).json({ error: '获取任务及实验项目数量失败' });
   }
 });
-
 
 // 获取所有结果信息
 app.get('/api/results', async (req, res) => {
@@ -389,7 +405,7 @@ app.get('/api/results/:id', async (req, res) => {
   }
 });
 
-// 新增 OCR 处理接口
+// OCR 处理接口
 app.post('/api/perform-ocr', async (req, res) => {
   console.log('perform');
   try {
@@ -399,7 +415,7 @@ app.post('/api/perform-ocr', async (req, res) => {
 
     // const matchedData = await callDoubaoAPI();
     let imageUrl = '';
-    console.log('imageUrl:', imageUrl);
+    // console.log('imageUrl:', imageUrl);
     // console.log('matchedData', matchedData);
     // console.log(JSON.parse(matchedData));
     const testData = {

@@ -186,19 +186,8 @@ const handlePasswordLogin = async () => {
         if (result.code === 0) {
           const userinfo = { user: passwordForm.value.username }
           loginStore.setUserInfo(userinfo)
-          console.log('result: ', result.data)
-
-          // 保存 token 到 localStorage 或 sessionStorage
-          // const token = result.data.token
-          // console.log('token: ', token)
-          // if (rememberMe.value) {
-          //   localStorage.setItem('token', token) // 七天免登录
-          //   localStorage.setItem('rememberMe', 'true')
-          // } else {
-          //   sessionStorage.setItem('token', token) // 普通登录
-          //   localStorage.setItem('rememberMe', 'false')
-          // }
-
+          // console.log('result: ', result.data)
+          
           const { accessToken, refreshToken } = result.data;
           // const { accessToken, rememberMe } = result.data;
           console.log(accessToken, rememberMe.value);
@@ -238,6 +227,17 @@ const handleVerifyCodeLogin = async () => {
           const userinfo = { user: user.nickname }
           loginStore.setUserInfo(userinfo)
           loginStore.setPhoneNumber(smsForm.value.phone)
+
+          // 存储两个令牌、用户信息和rememberMe
+          const { accessToken, refreshToken } = result.data;
+          // console.log('短信登录accessToken: ', accessToken);
+          // console.log('短信登录refreshToken: ', refreshToken);
+          // 手机号码短信登录没有七天免登录选项
+          localStorage.setItem('rememberMe', 'false')
+          sessionStorage.setItem('accessToken', accessToken)
+          sessionStorage.setItem('refreshToken', refreshToken)
+          console.log('已将两个token保存起来了')
+          
           localStorage.setItem('user', JSON.stringify(userinfo))
           router.push('/home')
           resetCountdown()

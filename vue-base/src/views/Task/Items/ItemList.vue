@@ -18,6 +18,7 @@
           v-model="searchKeyword"
           placeholder="请输入项目名称"
           style="width: 300px; margin-right: 10px;"
+          @keyup.enter="searchItems"
         />
         <el-button type="primary" @click="searchItems">搜索</el-button>
       </div>
@@ -101,7 +102,7 @@ import { useRoute, useRouter } from 'vue-router';
 import EditItem from './EditItem.vue';
 import ViewItem from './ViewItem.vue';
 import AddItem from './AddItem.vue';
-import { ElMessageBox } from 'element-plus';
+import { ElMessageBox, ElMessage } from 'element-plus';
 import { getInspectionItems, delete_inspectionItem } from '@/api/request.js';
 import { format } from 'date-fns';
 
@@ -133,12 +134,14 @@ const route = useRoute();
 const router = useRouter();
 const deviceId = ref(route.query.deviceId || '');
 const taskId = ref(route.params.taskId || '');
+const status = ref(route.query.status || '未开始');
 
 const pagedItemList = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
   return itemList.value.slice(start, end);
 });
+
 // 获取检测项目列表
 const fetchItems = async () => {
   try {
@@ -157,11 +160,19 @@ const fetchItems = async () => {
 
 // 绑定点击函数
 const addItem = () => {
+  if (status.value === '已完成') {
+    ElMessage.warning('实验已完成，不允许添加检测项目');
+    return;
+  }
   isAddVisible.value = true;
 };
 
 // 编辑检测项目方法
 const editItem = (row) => {
+  if (status.value === '已完成') {
+    ElMessage.warning('实验状态已完成，不允许修改检测项目信息');
+    return;
+  }
   editItemInfo.value = {...row };
   isEditVisible.value = true;
 };
@@ -199,8 +210,14 @@ const selectable = (row, index) => {
 const searchItems = async () => {
   try {
     // const response = await api.get('/api/inspection_items');
+
     const response = await getInspectionItems();
-    itemList.value = response.filter((item) =>
+    if (taskId.value) {
+      itemList.value = response.filter(item => item.task_id == taskId.value);
+    } else {
+      itemList.value = response;
+    }  
+    itemList.value = itemList.value.filter((item) =>
       item.project.includes(searchKeyword.value)
     );
     total.value = itemList.value.length;

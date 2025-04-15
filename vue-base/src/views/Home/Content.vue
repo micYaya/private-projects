@@ -35,14 +35,6 @@ import { useRouter } from 'vue-router'
 import { useLoginStore } from '@/store/index.js'
 import { ElMessageBox } from 'element-plus'
 
-// import api from '@/api/api.js';
-
-// api.get('/test').then(response => {
-//   console.log(response);
-// }).catch(error => {
-//   console.error(error);
-// });
-
 const loginStore = useLoginStore()
 const router = useRouter()
 const userinfo = computed(() => loginStore.getUserInfo)
