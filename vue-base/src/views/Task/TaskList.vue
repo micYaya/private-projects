@@ -69,7 +69,9 @@
             </el-button>
             <el-button
               type="warning"
-              :disabled="scope.row.status === '已完成' || scope.row.item_count === 0"
+              :disabled="
+                scope.row.status === '已完成' || scope.row.item_count === 0
+              "
               @click="confirmStartExperiment(scope.row)"
             >
               发起实验

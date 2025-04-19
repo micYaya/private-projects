@@ -220,11 +220,16 @@ const handlePasswordLogin = async () => {
           rememberMe.value, // 七天免登录复选框
         );
         if (result.code === 0) {
-          const userinfo = { user: passwordForm.value.username };
-          loginStore.setUserInfo(userinfo);
+          // const userinfo = { user: passwordForm.value.username };
+          // loginStore.setUserInfo(userinfo);
           // console.log('result: ', result.data)
 
-          const { accessToken, refreshToken } = result.data;
+          const { nickname, role, accessToken, refreshToken } = result.data;
+          const userinfo = {
+            username: nickname,
+            role: role,
+          };
+          loginStore.setUserInfo(nickname, role);
           // const { accessToken, rememberMe } = result.data;
           console.log(accessToken, rememberMe.value);
           if (rememberMe.value) {

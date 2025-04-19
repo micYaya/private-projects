@@ -13,6 +13,7 @@ import Home from '@/views/Home/Index.vue';
 // import ResultList from '@/views/Result/ResultList.vue';
 import ReportList from '@/views/Report/ReportList.vue';
 // import Statistic from '@/views/Statistic/Statistic.vue';
+import UserManage from '@/views/UserManage/UserManage.vue';
 
 // 存储路由配置信息
 const routes = [
@@ -22,33 +23,40 @@ const routes = [
   },
   {
     path: '/login',
+    name: 'login',
     component: Login,
   },
   {
     path: '/forget-password',
+    name: 'forget-password',
     component: () => import('@/views/Login/ForgetPassword.vue'),
   },
   {
     path: '/register',
+    name: 'register',
     component: () => import('@/views/Login/Register.vue'),
   },
   {
     path: '/home',
+    name: 'home',
     component: Home,
     meta: { requiresAuth: true },
     children: [
       {
         path: '',
+        name: 'origin',
         // component: origin
         component: () => import('@/views/Home/origin.vue'),
       },
       {
         path: 'device-info',
+        name: 'device-info',
         // component: DeviceList
         component: () => import('@/views/Device/DeviceList.vue'),
       },
       {
         path: 'task-info',
+        name: 'task-info',
         // component: TaskList
         component: () => import('@/views/Task/TaskList.vue'),
       },
@@ -60,16 +68,19 @@ const routes = [
       },
       {
         path: 'result-info',
+        name: 'result-info',
         // component: ResultList
         component: () => import('@/views/Result/ResultList.vue'),
       },
       {
         path: 'report-info',
+        name: 'report-info',
         component: ReportList,
         // component: () => import('@/views/Report/ReportList.vue')
       },
       {
         path: 'statistic-info',
+        name: 'statistic-info',
         // component: Statistic
         component: () => import('@/views/Statistic/Statistic.vue'),
       },
@@ -77,9 +88,32 @@ const routes = [
   },
 ];
 
+const user = JSON.parse(localStorage.getItem('user'));
+if (user?.role === 'admin') {
+  const adminChildRoute = {
+    path: 'user-mange',
+    name: 'home-user-mange',
+    component: UserManage,
+    meta: { requiresAuth: true, requiresAdmin: true },
+  };
+  const homeRoute = routes.find((r) => r.name === 'home');
+  if (homeRoute && homeRoute.children) {
+    homeRoute.children.push(adminChildRoute);
+  }
+}
+
+// // 定义超级管理员专用子路由
+// const adminChildRoute = {
+//   path: 'user-mange',
+//   name: 'home-user-mange',
+//   // component: () => import('@/views/UserManage/UserManage.vue'),
+//   component: UserManage,
+//   meta: { requiresAuth: true, requiresAdmin: true },
+// };
+
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes: routes,
 });
 
 // 检查令牌是否过期
@@ -98,7 +132,8 @@ function showLoginAlert(loginStore) {
     },
   });
 }
-// 添加路由守卫，限制未登录的用户访问系统
+
+// 前置守卫，限制未登录的用户访问系统
 router.beforeEach(async (to, from, next) => {
   try {
     const accessToken =
@@ -110,6 +145,19 @@ router.beforeEach(async (to, from, next) => {
     const rememberMe = localStorage.getItem('rememberMe') === 'true';
     const loginStore = useLoginStore();
     const userInfo = loginStore.getUserInfo;
+    // const userRole = userInfo ? userInfo.role : 'user';
+    const userRole = JSON.parse(localStorage.getItem('user'))?.role;
+    // console.log({userInfo});
+    // console.log({userRole});
+    // console.log('beforeeach router:', router.getRoutes());
+    // // 动态添加路由
+    // console.log('bool:1', router.hasRoute('home-user-mange'));
+    // if (userRole === 'admin' && !router.hasRoute('home-user-mange')) {
+    //   router.addRoute('home', adminChildRoute); // 'home' 是父路由的 name
+    // }
+    // // console.log('bool:2',router.hasRoute('home-user-mange'));
+    // console.log('beforeeach router:', router.getRoutes());
+
     console.log('路由守卫的userInfo：', userInfo);
     // 如果需要登录的页面
     if (to.meta.requiresAuth) {
@@ -118,6 +166,16 @@ router.beforeEach(async (to, from, next) => {
       if (!isTokenExpired(accessToken) && loginStore.isLoggedIn) {
         // if (accessToken && loginStore.isLoggedIn) {
         // 有 accessToken没过期 且已登录，直接放行
+        if (to.meta.requiresAdmin && userRole !== 'admin') {
+          // 超级管理员页面，但用户不是超级管理员
+          ElMessageBox.alert('您没有权限访问该页面！', '权限提示', {
+            confirmButtonText: '确定',
+            callback: () => {
+              next(false);
+            },
+          });
+          return;
+        }
         next();
         // } else if (accessToken && !rememberMe && refreshToken) {
       } else if (isTokenExpired(accessToken) && !isTokenExpired(refreshToken)) {
@@ -161,6 +219,13 @@ router.beforeEach(async (to, from, next) => {
     console.error('路由守卫发生错误：', err);
     next('/login'); // 出现错误时直接跳转到登录页
   }
+});
+
+// 初始化用户信息（页面刷新时）
+router.beforeResolve(async (to, from, next) => {
+  const loginStore = useLoginStore();
+  loginStore.initUserInfo();
+  next();
 });
 
 export default router;

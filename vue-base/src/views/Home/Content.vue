@@ -11,7 +11,7 @@
               alt="默认头像"
             />
             <!-- 在Vue模板中，计算属性ComputeRef会自动解包，无需手动通过.value取值 -->
-            <span v-if="userinfo">{{ userinfo.user }}</span>
+            <span v-if="userinfo">{{ userinfo.username }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -44,7 +44,7 @@ import { ElMessageBox } from 'element-plus';
 const loginStore = useLoginStore();
 const router = useRouter();
 const userinfo = computed(() => loginStore.getUserInfo);
-console.log(userinfo.value);
+console.log(userinfo);
 // 时间处理
 const currentTime = ref('');
 const updateTime = () => {

@@ -1,18 +1,14 @@
 <template>
   <div class="home-container">
     <Menu class="menu" :is-collapsed="isCollapsed" />
-    <Content class="content" :userinfo="userinfo" />
+    <Content class="content" />
   </div>
 </template>
 
 <script setup>
 import Menu from './Menu.vue';
 import Content from './Content.vue';
-import { useLoginStore } from '@/store/index.js';
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
-
-const loginStore = useLoginStore();
-const userinfo = computed(() => loginStore.getUserInfo);
 
 const isCollapsed = ref(false);
 const menuWidth = computed(() => (isCollapsed.value ? '60px' : '15%'));

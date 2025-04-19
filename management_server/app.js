@@ -6,6 +6,7 @@ const { callDoubaoAPI } = require('./process.js');
 
 const session = require('express-session');
 const indexRouter = require('./index.js');
+const userRouter = require('./user.js');
 
 const app = express();
 const port = 3000;
@@ -30,7 +31,7 @@ app.use(session({
 
 // 先加载开放接口
 app.use(indexRouter);
-
+app.use(userRouter);
 // const auth = require('./middleware/auth');
 // // 下面的接口都需要登录才能访问
 // app.use(auth); // 全局挂载中间件后，下面所有 /api/* 路径均要求有效 token

@@ -3,18 +3,27 @@ import { defineStore } from 'pinia';
 
 export const useLoginStore = defineStore('login', {
   state: () => ({
-    userInfo: null, // 用户名
+    userInfo: {
+      username: null, // 用户名
+      role: 'user', // 角色
+    },
     phoneNumber: null, // 电话号码
   }),
   actions: {
-    setUserInfo(userinfo) {
-      this.userInfo = userinfo;
+    setUserInfo(username, role) {
+      this.userInfo = {
+        username,
+        role,
+      };
     },
     setPhoneNumber(phone) {
       this.phoneNumber = phone; // 设置电话号码
     },
     logout() {
-      this.userInfo = null;
+      this.userInfo = {
+        username: null,
+        role: 'user',
+      };
       localStorage.removeItem('user');
       this.phoneNumber = null;
       // localStorage.removeItem('token'); // 清除本地 token
@@ -28,7 +37,7 @@ export const useLoginStore = defineStore('login', {
     // 页面刷新时在本地存储中找用户信息
     initUserInfo() {
       const userInfo = localStorage.getItem('user');
-      if (userInfo !== undefined && userInfo !== null) {
+      if (userInfo) {
         this.userInfo = JSON.parse(userInfo);
         console.log('状态管理里的userinfo：', this.userInfo);
       }
@@ -42,7 +51,8 @@ export const useLoginStore = defineStore('login', {
   },
   getters: {
     getUserInfo: (state) => state.userInfo,
-    isLoggedIn: (state) => !!state.userInfo,
+    isLoggedIn: (state) => !!state.userInfo.username,
     getPhoneNumber: (state) => state.phoneNumber,
+    getUserRole: (state) => state.userInfo.role,
   },
 });

@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const sms_util = require('./utils/sms_util')
 
 const bcrypt = require('bcryptjs');
@@ -115,6 +115,7 @@ router.post('/api/login_sms', async (req, res) => {
       creatTime: targetUser.creatTime,
       lastLogin: targetUser.lastLogin,
       nickname: targetUser.nickname,
+      role: targetUser.role,
       accessToken,
       refreshToken
     };
@@ -168,7 +169,8 @@ router.post('/api/reset_password', async (req, res) => {
       password: targetUser.password,
       creatTime: targetUser.creatTime,
       lastLogin: targetUser.lastLogin,
-      nickname: targetUser.nickname
+      nickname: targetUser.nickname,
+      role: targetUser.role,
     };
     try {
       await writeUsers(usersInfo);
@@ -207,14 +209,16 @@ router.post('/api/register', async (req, res) => {
     password: hashedPassword,
     createTime: Date.now(),
     lastLogin: Date.now(),
-    nickname: `admin${phone.slice(-4)}`
+    nickname: `admin${phone.slice(-4)}`,
+    role: 'user',
   };
   usersInfo.push(newUser);
   // 设置 session
   req.session.user = {
     phone: newUser.phone,
-    creatTime: newUser.creatTime,
-    nickname: newUser.nickname
+    creatTime: newUser.createTime,
+    nickname: newUser.nickname,
+    role: newUser.role,
   };
   try {
     await writeUsers(usersInfo);
@@ -276,7 +280,9 @@ router.get('/api/check_user', async (req, res) => {
         code: 0,
         data: {
           phone: targetUser.phone,
+          nickname: targetUser.nickname,
           lastLogin: targetUser.lastLogin,
+          role: targetUser.role,
           accessToken,
           refreshToken
           // rememberMe

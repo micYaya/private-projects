@@ -249,3 +249,47 @@ export const getDevicesMonth = async (oneMonthAgo) => {
     throw error;
   }
 };
+
+// 获取用户列表
+export const getUsers = async () => {
+  try {
+    const response = await api.get('/api/users');
+    return response.data;
+  } catch (error) {
+    console.error('获取用户列表失败', error);
+    throw error;
+  }
+};
+
+// 添加用户
+export const add_user = async (userInfo) => {
+  try {
+    const response = await api.post('/api/users', userInfo);
+    return response.data;
+  } catch (error) {
+    console.error('添加用户失败', error);
+    throw error;
+  }
+};
+
+// 编辑用户
+export const edit_user = async (userId, userInfo) => {
+  try {
+    const response = await api.put(`/api/users/${userId}`, userInfo);
+    return response.data;
+  } catch (error) {
+    console.error('编辑用户失败', error);
+    throw error;
+  }
+};
+
+// 删除用户
+export const delete_user = async (userId) => {
+  try {
+    const response = await api.delete(`/api/users/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('删除用户失败', error);
+    throw error;
+  }
+};

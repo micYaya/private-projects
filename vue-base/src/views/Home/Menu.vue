@@ -109,6 +109,24 @@
           <el-icon><Histogram /></el-icon><span>统计与分析</span>
         </template>
       </li>
+
+      <!-- 用户管理（仅 admin 显示） -->
+      <li
+        v-if="userRole === 'admin'"
+        :class="[{ active: currentPath === '/home/user-mange' }, 'li-hover']"
+        @click="goToPage('/user-mange')"
+      >
+        <el-tooltip
+          v-if="props.isCollapsed"
+          content="用户管理"
+          placement="right"
+        >
+          <el-icon><UserFilled /></el-icon>
+        </el-tooltip>
+        <template v-else>
+          <el-icon><UserFilled /></el-icon><span>用户管理</span>
+        </template>
+      </li>
     </ul>
   </div>
 </template>
@@ -116,25 +134,36 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { ref, watch } from 'vue';
+import { useLoginStore } from '@/store/index.js';
 
 const router = useRouter();
 const route = useRoute();
-
 const currentPath = ref(route.path);
-// const isCollapsed = ref(false);
-
 const props = defineProps({
   isCollapsed: Boolean,
 });
+
+// 获取用户角色
+const loginStore = useLoginStore();
+const userRole = ref(loginStore.getUserInfo?.role || 'user'); // 默认为普通用户
 
 watch(
   () => route.path,
   (newPath) => {
     currentPath.value = newPath;
-    console.log(currentPath.value);
+    // console.log(currentPath.value);
   },
 );
-
+// 监听用户角色变化
+watch(
+  () => loginStore.getUserInfo,
+  (userInfo) => {
+    if (userInfo) {
+      userRole.value = userInfo.role; // 更新角色状态
+    }
+  },
+  { immediate: true }, // 组件加载时立即获取角色
+);
 const goToPage = (path) => {
   router.push('/home' + path);
 };

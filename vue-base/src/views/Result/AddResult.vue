@@ -30,8 +30,8 @@ import ResultForm from './components/ResultForm.vue';
 const props = defineProps({
   isAddVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 const emits = defineEmits(['close', 'refresh']);
 const resultInfo = ref({
