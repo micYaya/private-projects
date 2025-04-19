@@ -1,11 +1,14 @@
 <template>
   <div class="menu-container" :class="{ collapsed: props.isCollapsed }">
     <div class="logo">
-      <img class="avatar" src="@/static/images/logo.jpg" alt="系统图标">
+      <img class="avatar" src="@/static/images/logo.jpg" alt="系统图标" />
       <p v-if="!props.isCollapsed">检测仪检定系统</p>
     </div>
     <ul>
-      <li @click="goToPage('/')" :class="[{ 'active': currentPath === '/home/' }, 'li-hover']">
+      <li
+        :class="[{ active: currentPath === '/home/' }, 'li-hover']"
+        @click="goToPage('/')"
+      >
         <!-- <el-icon><HomeFilled /></el-icon> -->
         <!-- <span v-if="!isCollapsed">主页</span> -->
         <el-tooltip v-if="props.isCollapsed" content="主页" placement="right">
@@ -15,9 +18,16 @@
           <el-icon><HomeFilled /></el-icon><span>主页</span>
         </template>
       </li>
-      <li @click="goToPage('/device-info')" :class="[{ 'active': currentPath === '/home/device-info' }, 'li-hover']">
+      <li
+        :class="[{ active: currentPath === '/home/device-info' }, 'li-hover']"
+        @click="goToPage('/device-info')"
+      >
         <!-- <el-icon><Menu /></el-icon><span v-if="!isCollapsed">设备信息管理</span> -->
-        <el-tooltip v-if="props.isCollapsed" content="设备信息管理" placement="right">
+        <el-tooltip
+          v-if="props.isCollapsed"
+          content="设备信息管理"
+          placement="right"
+        >
           <el-icon><Menu /></el-icon>
         </el-tooltip>
         <template v-else>
@@ -46,29 +56,53 @@
       <li v-else>
         <el-icon><Menu /></el-icon><span>实验任务管理</span>
         <ul class="submenu">
-          <li 
-            @click="goToPage('/task-info')" 
-            :class="[{ 'active': currentPath === '/home/task-info' }, 'li-hover']"
-          ><el-icon><Menu /></el-icon>任务管理</li>
-          <li 
-            @click="goToPage('/result-info')" 
-            :class="[{ 'active': currentPath === '/home/result-info' }, 'li-hover']"
-          ><el-icon><Menu /></el-icon>结果管理</li>
+          <li
+            :class="[{ active: currentPath === '/home/task-info' }, 'li-hover']"
+            @click="goToPage('/task-info')"
+          >
+            <el-icon><Menu /></el-icon>任务管理
+          </li>
+          <li
+            :class="[
+              { active: currentPath === '/home/result-info' },
+              'li-hover',
+            ]"
+            @click="goToPage('/result-info')"
+          >
+            <el-icon><Menu /></el-icon>结果管理
+          </li>
         </ul>
       </li>
 
-      <li @click="goToPage('/report-info')" :class="[{ 'active': currentPath === '/home/report-info' }, 'li-hover']">
+      <li
+        :class="[{ active: currentPath === '/home/report-info' }, 'li-hover']"
+        @click="goToPage('/report-info')"
+      >
         <!-- <el-icon><Printer /></el-icon><span v-if="!isCollapsed">实验报表打印</span> -->
-        <el-tooltip v-if="props.isCollapsed" content="实验报表打印" placement="right">
+        <el-tooltip
+          v-if="props.isCollapsed"
+          content="实验报表打印"
+          placement="right"
+        >
           <el-icon><Printer /></el-icon>
         </el-tooltip>
         <template v-else>
           <el-icon><Printer /></el-icon><span>实验报表打印</span>
         </template>
       </li>
-      <li @click="goToPage('/statistic-info')" :class="[{ 'active': currentPath === '/home/statistic-info' }, 'li-hover']">
+      <li
+        :class="[
+          { active: currentPath === '/home/statistic-info' },
+          'li-hover',
+        ]"
+        @click="goToPage('/statistic-info')"
+      >
         <!-- <el-icon><Histogram /></el-icon><span v-if="!isCollapsed">统计与分析</span> -->
-        <el-tooltip v-if="props.isCollapsed" content="统计与分析" placement="right">
+        <el-tooltip
+          v-if="props.isCollapsed"
+          content="统计与分析"
+          placement="right"
+        >
           <el-icon><Histogram /></el-icon>
         </el-tooltip>
         <template v-else>
@@ -81,7 +115,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch } from 'vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -90,18 +124,20 @@ const currentPath = ref(route.path);
 // const isCollapsed = ref(false);
 
 const props = defineProps({
-  isCollapsed: Boolean
+  isCollapsed: Boolean,
 });
 
-watch(() => route.path, (newPath) => {
-  currentPath.value = newPath;
-  console.log(currentPath.value);
-});
+watch(
+  () => route.path,
+  (newPath) => {
+    currentPath.value = newPath;
+    console.log(currentPath.value);
+  },
+);
 
 const goToPage = (path) => {
   router.push('/home' + path);
 };
-
 </script>
 
 <style lang="less" scoped>
@@ -113,9 +149,10 @@ const goToPage = (path) => {
   border-color: white;
   transition: width 0.3s ease;
 
-   /* 隐藏滚动条 */
-   overflow: -moz-scrollbars-none; /* Firefox */
+  /* 隐藏滚动条 */
+  overflow: -moz-scrollbars-none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
+
   /* 为webkit内核浏览器添加样式 */
   &::-webkit-scrollbar {
     display: none;
@@ -135,6 +172,7 @@ const goToPage = (path) => {
 
     .logo {
       justify-content: center;
+
       p {
         display: none;
       }
@@ -145,14 +183,17 @@ const goToPage = (path) => {
     display: flex;
     flex-direction: row;
     padding: 12px 2px 4px 10px;
+
     .avatar {
       width: 35px;
       height: 35px;
       border-radius: 10%;
       max-width: 100%;
     }
+
     p {
       font-size: 25px;
+
       /* font-size: 1.875rem; */
       margin: 0 8px;
     }
@@ -166,11 +207,13 @@ const goToPage = (path) => {
 
     li {
       padding: 12px 16px;
+
       /* padding: 0.75rem 1.25rem; */
       cursor: pointer;
       font-size: 20px;
+
       /* font-size: 1.25rem; */
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgb(255 255 255 / 10%);
       transition: background-color 0.3s ease;
 
       :deep(.el-icon) {
@@ -180,7 +223,7 @@ const goToPage = (path) => {
       }
     }
 
-    .li-hover:hover{
+    .li-hover:hover {
       background-color: #0056b3;
     }
   }

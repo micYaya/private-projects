@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isViewVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isViewVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>结果详情</span>
@@ -175,7 +180,7 @@
         <img v-if="showingImage" :src="imageUrl" alt="实验结果图像" style="max-width: 300px; max-height: 300px;">
       </div> -->
       <div class="modal-footer">
-        <el-button @click="closeModal">关闭</el-button>
+        <el-button @click="closeModal"> 关闭 </el-button>
       </div>
     </div>
   </div>
@@ -183,31 +188,31 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
-import { format } from 'date-fns'
+import { format } from 'date-fns';
 
 const props = defineProps({
   resultInfo: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isViewVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 const emits = defineEmits(['close']);
 
 const closeModal = () => {
   emits('close');
 };
-
 </script>
 
 <style scoped>
-@import '@/views/modal.less';
+@import url('@/views/modal.less');
+
 .modal {
-  width: 1000px; 
-  max-height: 90vh; 
+  width: 1000px;
+  max-height: 90vh;
   overflow-y: auto;
 }
 </style>

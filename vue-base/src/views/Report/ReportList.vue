@@ -11,89 +11,92 @@
         <el-input
           v-model="searchDeviceId"
           placeholder="请输入设备编号"
-          style="width: 300px; margin-right: 10px;"
+          style="width: 300px; margin-right: 10px"
           @keyup.enter="searchReports"
         />
-        <el-button type="primary" @click="searchReports">搜索</el-button>
+        <el-button type="primary" @click="searchReports"> 搜索 </el-button>
       </div>
     </div>
-    <br>
+    <br />
     <div class="lower-section">
       <el-skeleton v-if="loading" row="5" animated />
       <!-- 报表表格 -->
       <el-table
-      v-else
-      :data="paginatedReportList"
-      border
-      style="width: 100%; margin-top: 20px;"
-      @selection-change="handleSelectionChange"
-      :cell-style="{ textAlign: 'center' }"
-      :header-cell-style="{ textAlign: 'center' }"
-    >
-      <el-table-column
-        type="selection"
-        width="50"
-        :indeterminate="isIndeterminate"
-        :selectable="selectable"
-        @select-all="handleSelectAll"
-      ></el-table-column>
-      <el-table-column prop="deviceId" label="设备ID" width="100"></el-table-column>
-      <el-table-column prop="deviceName" label="设备名称" width="100"></el-table-column>
-      <el-table-column prop="status" label="实验状态" width="100"></el-table-column>
-      <el-table-column prop="inspectionDate" label="送检日期" width="260">
-        <template #default="scope">
-          {{ formatDate(scope.row.inspectionDate) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="endTime" label="实验结束时间" width="260">
-        <template #default="scope">
-          {{ formatDate(scope.row.endTime) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" fixed="right" min-width="200">
-        <template #default="scope">
-          <a 
-            href="javascript:void(0)" 
-            @click="viewReport(scope.row)" 
-            :disabled="scope.row.status !== '已完成'" 
-            :class="{ 'disabled-link': scope.row.status !== '已完成' }"
-          >
-            查看报表
-          </a>
-          <span class="divider">|</span>
-          <a 
-            href="javascript:void(0)" 
-            @click="printReport(scope.row)" 
-            :disabled="scope.row.status !== '已完成'" 
-            :class="{ 'disabled-link': scope.row.status !== '已完成' }"
-          >
-            打印报表
-          </a>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页组件 -->
-    <div class="pagination-wrapper">
-      <el-pagination
-        :current-page="currentPage"
-        :page-sizes="[5, 10, 15]"
-        :page-size="pageSize"
-        layout="total, prev, pager, next, sizes, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+        v-else
+        :data="paginatedReportList"
+        border
+        style="width: 100%; margin-top: 20px"
+        :cell-style="{ textAlign: 'center' }"
+        :header-cell-style="{ textAlign: 'center' }"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="50"
+          :indeterminate="isIndeterminate"
+          :selectable="selectable"
+          @select-all="handleSelectAll"
+        />
+        <el-table-column prop="deviceId" label="设备ID" width="100" />
+        <el-table-column prop="deviceName" label="设备名称" width="100" />
+        <el-table-column prop="status" label="实验状态" width="100" />
+        <el-table-column prop="inspectionDate" label="送检日期" width="260">
+          <template #default="scope">
+            {{ formatDate(scope.row.inspectionDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="endTime" label="实验结束时间" width="260">
+          <template #default="scope">
+            {{ formatDate(scope.row.endTime) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" min-width="200">
+          <template #default="scope">
+            <a
+              href="javascript:void(0)"
+              :disabled="scope.row.status !== '已完成'"
+              :class="{ 'disabled-link': scope.row.status !== '已完成' }"
+              @click="viewReport(scope.row)"
+            >
+              查看报表
+            </a>
+            <span class="divider">|</span>
+            <a
+              href="javascript:void(0)"
+              :disabled="scope.row.status !== '已完成'"
+              :class="{ 'disabled-link': scope.row.status !== '已完成' }"
+              @click="printReport(scope.row)"
+            >
+              打印报表
+            </a>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页组件 -->
+      <div class="pagination-wrapper">
+        <el-pagination
+          :current-page="currentPage"
+          :page-sizes="[5, 10, 15]"
+          :page-size="pageSize"
+          layout="total, prev, pager, next, sizes, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </div>
     <!-- 查看报表对话框 -->
-    <ViewReport :reportInfo="viewReportInfo" :isViewVisible="isViewVisible" @close="isViewVisible = false" />
+    <ViewReport
+      :report-info="viewReportInfo"
+      :is-view-visible="isViewVisible"
+      @close="isViewVisible = false"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import ViewReport from './ViewReport.vue';
-import { ElMessageBox } from 'element-plus';
 import { getDeviceList, getReport, getTaskList } from '@/api/request.js';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
@@ -154,12 +157,12 @@ const fetchReports = async () => {
       return {
         ...device,
         status: task ? task.status : '未实验',
-        endTime: task ? task.endTime : ''
+        endTime: task ? task.endTime : '',
       };
     });
 
     const reportsWithTaskInfo = await Promise.all(tasksPromises);
-    
+
     reportList.value = reportsWithTaskInfo;
     // 初始化过滤列表
     filteredReportList.value = reportsWithTaskInfo;
@@ -201,7 +204,7 @@ const printReport = async (row) => {
     const doc = new jsPDF();
 
     // 设置字体
-    doc.setFont('SourceHanSansCN-Normal'); 
+    doc.setFont('SourceHanSansCN-Normal');
 
     // 页面布局参数
     const startX = 20; // 左侧起始位置
@@ -219,11 +222,19 @@ const printReport = async (row) => {
     doc.setFontSize(12);
 
     const deviceInfo = [
-      [`设备ID: ${reportData.deviceInfo.deviceId}`, `设备名称: ${reportData.deviceInfo.deviceName}`, `设备型号: ${reportData.deviceInfo.deviceModel}`],
-      [`生产日期: ${formatDate(reportData.deviceInfo.manufactureDate)}`, `送检日期: ${formatDate(reportData.deviceInfo.inspectionDate)}`, `制造商: ${reportData.deviceInfo.manufacturer}`]
+      [
+        `设备ID: ${reportData.deviceInfo.deviceId}`,
+        `设备名称: ${reportData.deviceInfo.deviceName}`,
+        `设备型号: ${reportData.deviceInfo.deviceModel}`,
+      ],
+      [
+        `生产日期: ${formatDate(reportData.deviceInfo.manufactureDate)}`,
+        `送检日期: ${formatDate(reportData.deviceInfo.inspectionDate)}`,
+        `制造商: ${reportData.deviceInfo.manufacturer}`,
+      ],
     ];
-    
-    deviceInfo.forEach(row => {
+
+    deviceInfo.forEach((row) => {
       row.forEach((text, i) => {
         doc.text(text, startX + i * colWidth, startY);
       });
@@ -242,11 +253,19 @@ const printReport = async (row) => {
       doc.setFontSize(14).text('项目信息', startX, startY);
       startY += 10;
       const taskInfo = [
-        [`检测项目ID: ${item.item_id}`, `项目名称: ${item.project}`, `档位: ${item.gear}`],
-        [`百分比: ${item.percentage}`, `数据下限（%）: ${item.data_lower_limit}`, `数据上限（%）: ${item.data_upper_limit}`]
+        [
+          `检测项目ID: ${item.item_id}`,
+          `项目名称: ${item.project}`,
+          `档位: ${item.gear}`,
+        ],
+        [
+          `百分比: ${item.percentage}`,
+          `数据下限（%）: ${item.data_lower_limit}`,
+          `数据上限（%）: ${item.data_upper_limit}`,
+        ],
       ];
 
-      taskInfo.forEach(row => {
+      taskInfo.forEach((row) => {
         row.forEach((text, i) => {
           doc.text(text, startX + i * colWidth, startY);
         });
@@ -263,18 +282,38 @@ const printReport = async (row) => {
 
         const result = reportData.resultList[index];
         const resultInfo = [
-          [`二次电压（U）: ${result.twoP}`, `tanψ: ${result.tanValue}`, `计量点编号: ${result.measuredId}`],
-          [`温度: ${result.temperature}`, `湿度: ${result.humidity}`, `测试日期: ${formatDate(result.testDate)}`],
+          [
+            `二次电压（U）: ${result.twoP}`,
+            `tanψ: ${result.tanValue}`,
+            `计量点编号: ${result.measuredId}`,
+          ],
+          [
+            `温度: ${result.temperature}`,
+            `湿度: ${result.humidity}`,
+            `测试日期: ${formatDate(result.testDate)}`,
+          ],
           [`fa: ${result.fa}`, `fb: ${result.fb}`, `fc: ${result.fc}`],
           [`da: ${result.da}`, `db: ${result.db}`, `dc: ${result.dc}`],
           [`dUa: ${result.dUa}`, `dUb: ${result.dUb}`, `dUc: ${result.dUc}`],
-          [`Upta: ${result.Upta}`, `Uptb: ${result.Uptb}`, `Uptc: ${result.Uptc}`],
-          [`Uyba: ${result.Uyba}`, `Uybb: ${result.Uybb}`, `Uybc: ${result.Uybc}`],
-          [`res1: ${result.res1}`, `res2: ${result.res2}`, `res3: ${result.res3}`],
-          [`r%: ${result.rate}`]
+          [
+            `Upta: ${result.Upta}`,
+            `Uptb: ${result.Uptb}`,
+            `Uptc: ${result.Uptc}`,
+          ],
+          [
+            `Uyba: ${result.Uyba}`,
+            `Uybb: ${result.Uybb}`,
+            `Uybc: ${result.Uybc}`,
+          ],
+          [
+            `res1: ${result.res1}`,
+            `res2: ${result.res2}`,
+            `res3: ${result.res3}`,
+          ],
+          [`r%: ${result.rate}`],
         ];
 
-        resultInfo.forEach(row => {
+        resultInfo.forEach((row) => {
           row.forEach((text, i) => {
             if (startY > 250) {
               doc.addPage();
@@ -284,7 +323,7 @@ const printReport = async (row) => {
           });
           startY += rowHeight;
         });
-        
+
         startY += 10; // 间距
       }
 
@@ -303,7 +342,8 @@ const printReport = async (row) => {
 
 const handleSelectionChange = (rows) => {
   selectedRows.value = rows;
-  isIndeterminate.value = rows.length > 0 && rows.length < paginatedReportList.value.length;
+  isIndeterminate.value =
+    rows.length > 0 && rows.length < paginatedReportList.value.length;
   if (rows.length === paginatedReportList.value.length) {
     isIndeterminate.value = false;
   }
@@ -320,16 +360,14 @@ const handleSelectAll = (selection) => {
   selectedRows.value = selection;
 };
 
-const selectable = (row, index) => {
-  return true;
-};
+const selectable = () => true;
 
 // 搜索报表方法
 const searchReports = () => {
   // 根据 searchDeviceId 过滤 reportList
   if (searchDeviceId.value) {
     filteredReportList.value = reportList.value.filter((report) =>
-      report.deviceId.includes(searchDeviceId.value)
+      report.deviceId.includes(searchDeviceId.value),
     );
   } else {
     filteredReportList.value = reportList.value; // 如果搜索框为空，显示所有数据
@@ -357,7 +395,8 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-@import '@/views/list_share.less';
+@import url('@/views/list_share.less');
+
 .disabled-link {
   color: #ccc;
   cursor: not-allowed;

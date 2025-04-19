@@ -3,12 +3,9 @@
     <!-- 路由出口 -->
     <router-view />
   </div>
-
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style lang="less">
 html,

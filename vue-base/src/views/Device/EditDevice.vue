@@ -1,16 +1,22 @@
 <template>
-  <div v-if="isEditVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isEditVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>编辑设备信息</span>
         <button @click="closeModal">×</button>
       </div>
       <div class="modal-content">
-        <DeviceForm :deviceInfo="props.deviceInfo" ref="formRef" />
+        <DeviceForm ref="formRef" :device-info="deviceInfo" />
       </div>
       <div class="modal-footer">
-        <el-button type="primary" @click="saveDevice">保存</el-button> <!-- 绑定保存事件 -->
-        <el-button @click="closeModal">取消</el-button>
+        <el-button type="primary" @click="saveDevice"> 保存 </el-button>
+        <!-- 绑定保存事件 -->
+        <el-button @click="closeModal"> 取消 </el-button>
       </div>
     </div>
   </div>
@@ -26,12 +32,12 @@ import { ElMessage } from 'element-plus';
 const props = defineProps({
   deviceInfo: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isEditVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emits = defineEmits(['close', 'refresh']); // 增加refresh事件通知父组件刷新
@@ -50,13 +56,13 @@ const saveDevice = async () => {
         if (props.deviceInfo.manufactureDate) {
           props.deviceInfo.manufactureDate = format(
             props.deviceInfo.manufactureDate,
-            'yyyy-MM-dd HH:mm:ss'
+            'yyyy-MM-dd HH:mm:ss',
           );
         }
         if (props.deviceInfo.inspectionDate) {
           props.deviceInfo.inspectionDate = format(
             props.deviceInfo.inspectionDate,
-            'yyyy-MM-dd HH:mm:ss'
+            'yyyy-MM-dd HH:mm:ss',
           );
         }
 
@@ -69,7 +75,7 @@ const saveDevice = async () => {
         }
       }
     } else {
-      ElMessage.error('表单验证不通过，请检查输入信息')
+      ElMessage.error('表单验证不通过，请检查输入信息');
       // console.log('验证不通过');
       return false;
     }
@@ -78,6 +84,5 @@ const saveDevice = async () => {
 </script>
 
 <style scoped>
-@import '@/views/modal.less';
-
+@import url('@/views/modal.less');
 </style>

@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isViewVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isViewVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>查看检测项目详情</span>
@@ -40,7 +45,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <el-button @click="closeModal">关闭</el-button>
+        <el-button @click="closeModal"> 关闭 </el-button>
       </div>
     </div>
   </div>
@@ -48,17 +53,16 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
-import { format } from 'date-fns';
 
 const props = defineProps({
   itemInfo: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isViewVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emits = defineEmits(['close']);
@@ -69,5 +73,5 @@ const closeModal = () => {
 </script>
 
 <style scoped>
-@import '@/views/modal.less';
+@import url('@/views/modal.less');
 </style>

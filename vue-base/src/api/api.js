@@ -16,11 +16,15 @@ const refreshAccessToken = async (refreshToken, rememberMe) => {
   try {
     console.log('开始请求更换accessToken');
     const config = {
-      headers: { 
-        'Authorization': `Bearer ${refreshToken}`
-      }
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
     };
-    const res = await axios.post('http://127.0.0.1:3000/api/refresh_token', {}, config);
+    const res = await axios.post(
+      'http://127.0.0.1:3000/api/refresh_token',
+      {},
+      config,
+    );
     console.log('刷新请求已发送');
     const newAccessToken = res.data.data.accessToken;
     console.log('更换accessToken');
@@ -41,8 +45,12 @@ const refreshAccessToken = async (refreshToken, rememberMe) => {
 api.interceptors.request.use(async (config) => {
   console.log('拦截器进入了');
   // console.log('请求拦截器 - 配置:', config);
-  const accessToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-  const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+  const accessToken =
+    localStorage.getItem('accessToken') ||
+    sessionStorage.getItem('accessToken');
+  const refreshToken =
+    localStorage.getItem('refreshToken') ||
+    sessionStorage.getItem('refreshToken');
   const rememberMe = localStorage.getItem('rememberMe') === 'true';
   const loginStore = useLoginStore();
   const userInfo = loginStore.getUserInfo;
@@ -96,9 +104,15 @@ api.interceptors.response.use(
     const rememberMe = localStorage.getItem('rememberMe') === 'true';
     const loginStore = useLoginStore();
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+      const refreshToken =
+        localStorage.getItem('refreshToken') ||
+        sessionStorage.getItem('refreshToken');
       const newAccessToken = await refreshAccessToken(refreshToken, rememberMe);
       if (newAccessToken) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -118,7 +132,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

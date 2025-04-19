@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isViewVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isViewVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>查看详情</span>
@@ -42,7 +47,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <el-button @click="closeModal">关闭</el-button>
+        <el-button @click="closeModal"> 关闭 </el-button>
       </div>
     </div>
   </div>
@@ -55,12 +60,12 @@ import { format } from 'date-fns';
 const props = defineProps({
   deviceInfo: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isViewVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emits = defineEmits(['close']);
@@ -77,5 +82,5 @@ const formatDate = (dateStr) => {
 </script>
 
 <style scoped>
-@import '../modal.less';
+@import url('../modal.less');
 </style>

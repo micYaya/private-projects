@@ -3,8 +3,8 @@ import { defineStore } from 'pinia';
 
 export const useLoginStore = defineStore('login', {
   state: () => ({
-    userInfo: null,  // 用户名
-    phoneNumber: null // 电话号码
+    userInfo: null, // 用户名
+    phoneNumber: null, // 电话号码
   }),
   actions: {
     setUserInfo(userinfo) {
@@ -20,7 +20,7 @@ export const useLoginStore = defineStore('login', {
       // localStorage.removeItem('token'); // 清除本地 token
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('rememberMe')
+      localStorage.removeItem('rememberMe');
       // sessionStorage.removeItem('token'); // 如果用了 session 也一起清除
       sessionStorage.removeItem('accessToken');
       sessionStorage.removeItem('refreshToken');
@@ -38,11 +38,11 @@ export const useLoginStore = defineStore('login', {
         this.userInfo = userinfo;
         localStorage.setItem('user', JSON.stringify(userinfo));
       }
-    }    
+    },
   },
   getters: {
     getUserInfo: (state) => state.userInfo,
     isLoggedIn: (state) => !!state.userInfo,
-    getPhoneNumber: (state) => state.phoneNumber
-  }
+    getPhoneNumber: (state) => state.phoneNumber,
+  },
 });

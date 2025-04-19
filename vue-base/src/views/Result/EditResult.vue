@@ -1,23 +1,28 @@
 <template>
-  <div v-if="isEditVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isEditVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>编辑结果</span>
         <button @click="closeModal">×</button>
       </div>
       <div class="modal-content">
-        <ResultForm :resultInfo="resultInfo" />
+        <ResultForm :result-info="resultInfo" />
       </div>
       <div class="modal-footer">
-        <el-button type="primary" @click="saveResult">保存</el-button>
-        <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="saveResult"> 保存 </el-button>
+        <el-button @click="resetForm"> 重置 </el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 import { edit_result } from '@/api/request.js';
 import { format } from 'date-fns';
 import ResultForm from './components/ResultForm.vue';
@@ -25,16 +30,15 @@ import ResultForm from './components/ResultForm.vue';
 const props = defineProps({
   resultInfo: {
     type: Object,
-    default: () => ({})
+    default: () => ({}),
   },
   isEditVisible: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 const emits = defineEmits(['close', 'refresh']);
 const saveResult = async () => {
-
   if (props.resultInfo.testDate) {
     props.resultInfo.testDate = format(props.resultInfo.testDate, 'yyyy-MM-dd');
   }
@@ -58,10 +62,11 @@ const closeModal = () => {
 </script>
 
 <style scoped>
-@import '@/views/modal.less';
+@import url('@/views/modal.less');
+
 .modal {
-  width: 1000px; 
-  max-height: 90vh; 
+  width: 1000px;
+  max-height: 90vh;
   overflow-y: auto;
 }
 </style>

@@ -13,91 +13,102 @@
         <el-input
           v-model="searchKeyword"
           placeholder="请输入关联设备编号"
-          style="width: 300px; margin-right: 10px;"
+          style="width: 300px; margin-right: 10px"
           @keyup.enter="searchResults"
         />
-        <el-button type="primary" @click="searchResults">搜索</el-button>
+        <el-button type="primary" @click="searchResults"> 搜索 </el-button>
       </div>
       <!-- 操作按钮区域 -->
       <div class="action-buttons">
-        <el-button type="danger" @click="batchDelete">批量删除</el-button>
-        <el-button type="warning" @click="addResult">添加结果</el-button>
-        <el-button type="primary" @click="fetchResults">刷新</el-button>
+        <el-button type="danger" @click="batchDelete"> 批量删除 </el-button>
+        <el-button type="warning" @click="addResult"> 添加结果 </el-button>
       </div>
     </div>
 
-    <br>
+    <br />
     <div class="lower-section">
       <!-- 结果表格 -->
       <el-table
-      :data="resultList"
-      border
-      style="width: 100%; margin-top: 20px; "
-      @selection-change="handleSelectionChange"
-      :cell-style="{ textAlign: 'center' }"
-      :header-cell-style="{ textAlign: 'center' }"
-    >
-      <el-table-column
-        type="selection"
-        width="60"
-        :indeterminate="isIndeterminate"
-        :selectable="selectable"
-        @select-all="handleSelectAll"
-      ></el-table-column>
-      <el-table-column prop="resultId" label="结果编号" width="160"></el-table-column>
-      <el-table-column prop="deviceId" label="关联设备编号" width="160"></el-table-column>
-      <el-table-column prop="twoP" label="二次电压" width="160"></el-table-column>
-      <el-table-column prop="testDate" label="测试日期" width="160">
-        <template #default="scope">
-          {{ formatDate(scope.row.testDate) }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="rate" label="r%" width="160"></el-table-column>
-      <el-table-column label="操作" fixed="right" min-width="200">
-        <template #default="scope">
-          <a href="javascript:void(0)" @click="editResult(scope.row)">编辑</a>
-          <span class="divider">|</span>
-          <a href="javascript:void(0)" @click="viewResult(scope.row)">查看详情</a>
-          <span class="divider">|</span>
-          <a href="javascript:void(0)" @click="deleteConfirm(scope.row)">删除</a>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页组件 -->
-    <div class="pagination-wrapper">
-      <el-pagination
-        :current-page="currentPage"
-        :page-sizes="[5, 10, 15]"
-        :page-size="pageSize"
-        layout="total, prev, pager, next, sizes, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+        :data="resultList"
+        border
+        style="width: 100%; margin-top: 20px"
+        :cell-style="{ textAlign: 'center' }"
+        :header-cell-style="{ textAlign: 'center' }"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          width="60"
+          :indeterminate="isIndeterminate"
+          :selectable="selectable"
+          @select-all="handleSelectAll"
+        />
+        <el-table-column prop="resultId" label="结果编号" width="160" />
+        <el-table-column prop="deviceId" label="关联设备编号" width="160" />
+        <el-table-column prop="twoP" label="二次电压" width="160" />
+        <el-table-column prop="testDate" label="测试日期" width="160">
+          <template #default="scope">
+            {{ formatDate(scope.row.testDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="rate" label="r%" width="160" />
+        <el-table-column label="操作" fixed="right" min-width="200">
+          <template #default="scope">
+            <a href="javascript:void(0)" @click="editResult(scope.row)">编辑</a>
+            <span class="divider">|</span>
+            <a href="javascript:void(0)" @click="viewResult(scope.row)"
+              >查看详情</a
+            >
+            <span class="divider">|</span>
+            <a href="javascript:void(0)" @click="deleteConfirm(scope.row)"
+              >删除</a
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页组件 -->
+      <div class="pagination-wrapper">
+        <el-pagination
+          :current-page="currentPage"
+          :page-sizes="[5, 10, 15]"
+          :page-size="pageSize"
+          layout="total, prev, pager, next, sizes, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </div>
     <!-- 编辑结果对话框 -->
     <EditResult
-      :resultInfo="editResultInfo" 
-      :isEditVisible="isEditVisible" 
-      @close="isEditVisible = false" 
-      @refresh="fetchResults" />
+      :result-info="editResultInfo"
+      :is-edit-visible="isEditVisible"
+      @close="isEditVisible = false"
+      @refresh="fetchResults"
+    />
     <!-- 查看结果详情对话框 -->
-    <ViewResult :resultInfo="viewResultInfo" :isViewVisible="isViewVisible" @close="isViewVisible = false" />
+    <ViewResult
+      :result-info="viewResultInfo"
+      :is-view-visible="isViewVisible"
+      @close="isViewVisible = false"
+    />
     <!-- 添加结果对话框 -->
-    <AddResult :isAddVisible="isAddVisible" @close="isAddVisible = false" @refresh="fetchResults" />
+    <AddResult
+      :is-add-visible="isAddVisible"
+      @close="isAddVisible = false"
+      @refresh="fetchResults"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import EditResult from './EditResult.vue';
 import ViewResult from './ViewResult.vue';
 import AddResult from './AddResult.vue';
 import { ElMessageBox } from 'element-plus';
-import axios from 'axios';
-import {getResults, delete_result} from '@/api/request.js'
-import { format } from 'date-fns'
+import { getResults, delete_result } from '@/api/request.js';
+import { format } from 'date-fns';
 
 // 结果列表
 const resultList = ref([]);
@@ -165,7 +176,8 @@ const viewResult = (row) => {
 
 const handleSelectionChange = (rows) => {
   selectedRows.value = rows;
-  isIndeterminate.value = rows.length > 0 && rows.length < resultList.value.length;
+  isIndeterminate.value =
+    rows.length > 0 && rows.length < resultList.value.length;
   if (rows.length === resultList.value.length) {
     isIndeterminate.value = false;
   }
@@ -182,24 +194,22 @@ const handleSelectAll = (selection) => {
   selectedRows.value = selection;
 };
 
-const selectable = (row, index) => {
-  return true;
-};
+const selectable = () => true;
 
 // 搜索结果方法
 const searchResults = async () => {
   // const response = await api.get('/api/results');
   const response = await getResults();
-    const filtered = response.filter((result) =>
-      String(result.deviceId).includes(searchKeyword.value)
-    );
-    fullResultList.value = filtered;
-    total.value = filtered.length;
+  const filtered = response.filter((result) =>
+    String(result.deviceId).includes(searchKeyword.value),
+  );
+  fullResultList.value = filtered;
+  total.value = filtered.length;
 
-    // 分页处理
-    const startIndex = (currentPage.value - 1) * pageSize.value;
-    const endIndex = startIndex + pageSize.value;
-    resultList.value = filtered.slice(startIndex, endIndex);
+  // 分页处理
+  const startIndex = (currentPage.value - 1) * pageSize.value;
+  const endIndex = startIndex + pageSize.value;
+  resultList.value = filtered.slice(startIndex, endIndex);
 };
 
 // 批量删除方法
@@ -232,12 +242,14 @@ const deleteConfirm = (row) => {
   ElMessageBox.confirm('请问您是否要删除该结果信息?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    deleteResult(row.resultId);
-  }).catch(() => {
-    // 用户取消操作
-  });
+    type: 'warning',
+  })
+    .then(() => {
+      deleteResult(row.resultId);
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
 };
 
 // 分页大小改变时的回调
@@ -255,13 +267,8 @@ const handleCurrentChange = (newPage) => {
 
 // 初始化时获取结果列表
 fetchResults();
-
-// 添加刷新方法
-const refreshResults = async () => {
-  await fetchResults();
-};
 </script>
 
 <style lang="less" scoped>
-@import '@/views/list_share.less';
+@import url('@/views/list_share.less');
 </style>

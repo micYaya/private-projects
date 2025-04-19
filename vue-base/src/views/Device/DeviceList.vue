@@ -12,28 +12,28 @@
         <el-input
           v-model="searchKeyword"
           placeholder="请输入设备名称"
-          style="width: 300px; margin-right: 10px;"
+          style="width: 300px; margin-right: 10px"
           @keyup.enter="searchDevices"
         />
-        <el-button type="primary" @click="searchDevices">搜索</el-button>
+        <el-button type="primary" @click="searchDevices"> 搜索 </el-button>
       </div>
       <!-- 操作按钮区域 -->
       <div class="action-buttons">
-        <el-button type="danger" @click="batchDelete">批量删除</el-button>
-        <el-button type="warning" @click="addDevice">添加设备</el-button>
+        <el-button type="danger" @click="batchDelete"> 批量删除 </el-button>
+        <el-button type="warning" @click="addDevice"> 添加设备 </el-button>
       </div>
     </div>
-    <br>
+    <br />
     <!-- 下半部分区域 -->
     <div class="lower-section">
       <!-- 设备表格 -->
       <el-table
         :data="deviceList"
         border
-        style="width: 100%; margin-top: 20px;"
-        @selection-change="handleSelectionChange"
+        style="width: 100%; margin-top: 20px"
         :cell-style="{ textAlign: 'center' }"
         :header-cell-style="{ textAlign: 'center' }"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column
           type="selection"
@@ -41,10 +41,10 @@
           :indeterminate="isIndeterminate"
           :selectable="selectable"
           @select-all="handleSelectAll"
-        ></el-table-column>
-        <el-table-column prop="deviceId" label="设备ID" width="100"></el-table-column>
-        <el-table-column prop="deviceName" label="设备名称" width="100"></el-table-column>
-        <el-table-column prop="deviceModel" label="设备型号" width="100"></el-table-column>
+        />
+        <el-table-column prop="deviceId" label="设备ID" width="100" />
+        <el-table-column prop="deviceName" label="设备名称" width="100" />
+        <el-table-column prop="deviceModel" label="设备型号" width="100" />
         <el-table-column prop="manufactureDate" label="生产日期" width="200">
           <template #default="scope">
             {{ formatDate(scope.row.manufactureDate) }}
@@ -55,18 +55,22 @@
             {{ formatDate(scope.row.inspectionDate) }}
           </template>
         </el-table-column>
-        <el-table-column prop="manufacturer" label="制造商" width="140"></el-table-column>
-        <el-table-column prop="productionPlace" label="产地" width="140"></el-table-column>
-        <el-table-column prop="deviceStatus" label="设备状态" width="100"></el-table-column>
+        <el-table-column prop="manufacturer" label="制造商" width="140" />
+        <el-table-column prop="productionPlace" label="产地" width="140" />
+        <el-table-column prop="deviceStatus" label="设备状态" width="100" />
         <el-table-column label="操作" fixed="right" min-width="200">
           <template #default="scope">
             <!-- <span @click="editDevice(scope.row)">编辑</span> -->
             <a href="javascript:void(0)" @click="editDevice(scope.row)">编辑</a>
             <span class="divider">|</span>
             <!-- <span @click="viewDevice(scope.row)">查看详情</span> -->
-            <a href="javascript:void(0)" @click="viewDevice(scope.row)">查看详情</a>
+            <a href="javascript:void(0)" @click="viewDevice(scope.row)"
+              >查看详情</a
+            >
             <span class="divider">|</span>
-            <a href="javascript:void(0)" @click="deleteConfirm(scope.row)">删除</a>
+            <a href="javascript:void(0)" @click="deleteConfirm(scope.row)"
+              >删除</a
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -85,33 +89,39 @@
     </div>
     <!-- 编辑设备对话框 -->
     <EditDevice
-     :deviceInfo="editDeviceInfo" 
-     :isEditVisible="isEditVisible" 
-     @close="isEditVisible = false" 
-     @refresh="fetchDevices" />
+      :device-info="editDeviceInfo"
+      :is-edit-visible="isEditVisible"
+      @close="isEditVisible = false"
+      @refresh="fetchDevices"
+    />
     <!-- 查看设备详情对话框 -->
-    <ViewDevice :deviceInfo="viewDeviceInfo" :isViewVisible="isViewVisible" @close="isViewVisible = false" />
+    <ViewDevice
+      :device-info="viewDeviceInfo"
+      :is-view-visible="isViewVisible"
+      @close="isViewVisible = false"
+    />
     <!-- 添加设备对话框 -->
-    <AddDevice :isAddVisible="isAddVisible" @close="isAddVisible = false" @refresh="fetchDevices" />
+    <AddDevice
+      :is-add-visible="isAddVisible"
+      @close="isAddVisible = false"
+      @refresh="fetchDevices"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import EditDevice from './EditDevice.vue';
 import ViewDevice from './ViewDevice.vue';
 import AddDevice from './AddDevice.vue';
 import { ElMessageBox } from 'element-plus';
-import axios from 'axios';
-import { getDeviceList, delete_device } from '@/api/request.js'
-import { format } from 'date-fns'
+import { getDeviceList, delete_device } from '@/api/request.js';
+import { format } from 'date-fns';
 
 // 设备列表
 const deviceList = ref([]);
 // 搜索关键字
 const searchKeyword = ref('');
-// 时间范围
-const dateRange = ref([]);
 // 当前页码
 const currentPage = ref(1);
 // 每页数量
@@ -174,7 +184,8 @@ const viewDevice = (row) => {
 
 const handleSelectionChange = (rows) => {
   selectedRows.value = rows;
-  isIndeterminate.value = rows.length > 0 && rows.length < deviceList.value.length;
+  isIndeterminate.value =
+    rows.length > 0 && rows.length < deviceList.value.length;
   if (rows.length === deviceList.value.length) {
     isIndeterminate.value = false;
   }
@@ -191,9 +202,7 @@ const handleSelectAll = (selection) => {
   selectedRows.value = selection;
 };
 
-const selectable = (row, index) => {
-  return true;
-};
+const selectable = () => true;
 
 // 搜索设备方法
 const searchDevices = async () => {
@@ -201,7 +210,7 @@ const searchDevices = async () => {
     // const response = await api.get('/api/devices');
     const response = await getDeviceList();
     const filtered = response.filter((device) =>
-      device.deviceName.includes(searchKeyword.value)
+      device.deviceName.includes(searchKeyword.value),
     );
 
     total.value = filtered.length;
@@ -245,12 +254,14 @@ const deleteConfirm = (row) => {
   ElMessageBox.confirm('请问您是否要删除该设备信息信息?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    deleteDevice(row.id);
-  }).catch(() => {
-    // 用户取消操作
-  });
+    type: 'warning',
+  })
+    .then(() => {
+      deleteDevice(row.id);
+    })
+    .catch(() => {
+      // 用户取消操作
+    });
 };
 
 // 分页大小改变时的回调
@@ -269,9 +280,8 @@ const handleCurrentChange = (newPage) => {
 
 // 初始化时获取设备列表
 fetchDevices();
-
 </script>
 
 <style lang="less" scoped>
-@import '@/views/list_share.less';
+@import url('@/views/list_share.less');
 </style>

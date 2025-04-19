@@ -100,7 +100,7 @@ router.post('/api/login_sms', async (req, res) => {
     const accessToken = jwt.sign(
       { id: targetUser.id, nickname: targetUser.nickname },
       config.config.jwtSecretKey,
-      { expiresIn: '10s' } // accessToken 有效期短
+      { expiresIn: '1h' } // accessToken 有效期短
     );
     const refreshToken = jwt.sign(
       { id: targetUser.id },
@@ -251,7 +251,7 @@ router.get('/api/check_user', async (req, res) => {
       const accessToken = jwt.sign(
         { id: targetUser.id, nickname: targetUser.nickname },
         config.config.jwtSecretKey,
-        { expiresIn: '10s' } // accessToken 有效期短
+        { expiresIn: '1h' } // accessToken 有效期短
       );
       
       const refreshToken = jwt.sign(

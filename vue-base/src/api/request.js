@@ -47,7 +47,9 @@ export const delete_device = async (id) => {
 // 更新设备检测状态，任务状态变成“已完成”时，就算检测完成
 export const updateDeviceStatus = async (deviceId, status) => {
   try {
-    const response = await api.put(`/api/devices/${deviceId}/status`, { deviceStatus: status });
+    const response = await api.put(`/api/devices/${deviceId}/status`, {
+      deviceStatus: status,
+    });
     return response.data;
   } catch (error) {
     console.error('更新设备状态失败', error);
@@ -95,7 +97,6 @@ export const delete_result = async (resultId) => {
     throw error;
   }
 };
-
 
 // 获取检测项目列表
 export const getInspectionItems = async () => {
@@ -151,7 +152,7 @@ export const getTaskList = async (id) => {
 // 获取任务列表
 export const getTasks = async () => {
   try {
-    const response = await api.get(`/api/tasks`);
+    const response = await api.get('/api/tasks');
     return response.data;
   } catch (error) {
     console.error('获取任务列表失败', error);
@@ -239,7 +240,9 @@ export const getReport = async (deviceId) => {
 // 获取近一个月送检设备数量
 export const getDevicesMonth = async (oneMonthAgo) => {
   try {
-    const response = await api.get(`/api/devices?inspectionDate_gte=${oneMonthAgo}`);;
+    const response = await api.get(
+      `/api/devices?inspectionDate_gte=${oneMonthAgo}`,
+    );
     return response.data;
   } catch (error) {
     console.error('获取近一个月送检设备数量失败', error);

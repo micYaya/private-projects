@@ -6,7 +6,11 @@
   </el-breadcrumb>
   <div class="statistic-page">
     <div class="statistic-card-container">
-      <div class="statistic-card" v-for="(count, key) in statisticCounts" :key="key">
+      <div
+        v-for="(count, key) in statisticCounts"
+        :key="key"
+        class="statistic-card"
+      >
         <span class="count-label">{{ keyLabel[key] }}</span>
         <span class="count-number">{{ count }}</span>
       </div>
@@ -32,7 +36,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import dayjs from 'dayjs';
-import { getDeviceList, getTasks, getInspectionItems, getResults, getDevicesMonth } from '@/api/request.js';
+import {
+  getDeviceList,
+  getTasks,
+  getInspectionItems,
+  getResults,
+  getDevicesMonth,
+} from '@/api/request.js';
 import BaseChart from './BaseChart.vue';
 
 // 统计数据
@@ -40,14 +50,14 @@ const statisticCounts = ref({
   device: 0,
   task: 0,
   item: 0,
-  result: 0
+  result: 0,
 });
 
 const keyLabel = {
   device: '设备数量',
   task: '任务数量',
   item: '实验项目数量',
-  result: '结果数量'
+  result: '结果数量',
 };
 
 // 环图数据
@@ -89,8 +99,9 @@ const fetchStatistics = async () => {
     statisticCounts.value.result = resultRes.length;
 
     // 已完成任务设备占比
-    const completedTasks = taskRes.filter(task => task.status === '已完成');
-    completedDeviceRatio.value = (completedTasks.length / deviceRes.length) * 100;
+    const completedTasks = taskRes.filter((task) => task.status === '已完成');
+    completedDeviceRatio.value =
+      (completedTasks.length / deviceRes.length) * 100;
 
     // 近一个月送检设备统计
     const now = dayjs();
@@ -98,24 +109,28 @@ const fetchStatistics = async () => {
     // const inspectionRes = await api.get(`/api/devices?inspectionDate_gte=${oneMonthAgo}`);
     const inspectionRes = await getDevicesMonth(oneMonthAgo);
     const dailyData = {};
-    inspectionRes.forEach(device => {
+    inspectionRes.forEach((device) => {
       const date = dayjs(device.inspectionDate).format('YYYY-MM-DD');
       dailyData[date] = (dailyData[date] || 0) + 1;
     });
-    dailyInspectionData.value = Object.entries(dailyData).map(([date, count]) => ({
-      date,
-      count
-    }));
+    dailyInspectionData.value = Object.entries(dailyData).map(
+      ([date, count]) => ({
+        date,
+        count,
+      }),
+    );
 
     // 实验项目分类统计
     const projectMap = new Map();
-    itemRes.forEach(item => {
+    itemRes.forEach((item) => {
       projectMap.set(item.project, (projectMap.get(item.project) || 0) + 1);
     });
-    projectCategoryData.value = Array.from(projectMap.entries()).map(([project, count]) => ({
-      value: count,
-      name: project
-    }));
+    projectCategoryData.value = Array.from(projectMap.entries()).map(
+      ([project, count]) => ({
+        value: count,
+        name: project,
+      }),
+    );
 
     // // 绘制图表
     // drawRingChart();
@@ -125,47 +140,52 @@ const fetchStatistics = async () => {
     // 设置图表配置项
     ringChartOption.value = {
       title: { text: '已完成任务设备占比', left: 'center' },
-      series: [{
-        type: 'pie',
-        radius: ['50%', '70%'],
-        label: { 
-          formatter: `${completedDeviceRatio.value.toFixed(1)}%`,
-          fontSize: '3rem',
-          position: 'center'
+      series: [
+        {
+          type: 'pie',
+          radius: ['50%', '70%'],
+          label: {
+            formatter: `${completedDeviceRatio.value.toFixed(1)}%`,
+            fontSize: '3rem',
+            position: 'center',
+          },
+          data: [
+            { value: completedDeviceRatio.value, name: '已完成任务设备' },
+            { value: 100 - completedDeviceRatio.value, name: '未完成任务设备' },
+          ],
         },
-        data: [
-          { value: completedDeviceRatio.value, name: '已完成任务设备' },
-          { value: 100 - completedDeviceRatio.value, name: '未完成任务设备' }
-        ]
-      }]
+      ],
     };
 
     lineChartOption.value = {
       title: { text: '近一个月送检设备数量', left: 'center' },
-      xAxis: { data: dailyInspectionData.value.map(item => item.date) },
+      xAxis: { data: dailyInspectionData.value.map((item) => item.date) },
       yAxis: {},
-      series: [{
-        data: dailyInspectionData.value.map(item => item.count),
-        type: 'line'
-      }],
+      series: [
+        {
+          data: dailyInspectionData.value.map((item) => item.count),
+          type: 'line',
+        },
+      ],
       tooltip: {
         // trigger: 'axis',
-        show: true
-      }
+        show: true,
+      },
     };
 
     pieChartOption.value = {
       title: { text: '实验项目分类统计', left: 'center' },
-      series: [{ 
-        type: 'pie', 
-        data: projectCategoryData.value
-      }],
+      series: [
+        {
+          type: 'pie',
+          data: projectCategoryData.value,
+        },
+      ],
       tooltip: {
-      // trigger: 'item',
-      show: true
-    } 
+        // trigger: 'item',
+        show: true,
+      },
     };
-
   } catch (error) {
     console.error('获取统计数据失败', error);
   }
@@ -278,7 +298,7 @@ onMounted(() => {
 
 .chart-item-shadow {
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
   border-radius: 8px;
   display: grid;
   align-items: center;
@@ -291,45 +311,54 @@ onMounted(() => {
   padding-bottom: 10px;
   margin-bottom: 15px;
 }
-@media screen and (max-width: 1300px) and (min-width: 600px) {
+
+@media screen and (width <= 1300px) and (width >= 600px) {
   .statistic-card-container {
     /* 两列布局 */
     display: grid;
-    grid-template-columns: repeat(2 ,1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
+
   .statistic-card {
     width: auto;
     height: 75px;
     font-size: 3vw;
   }
+
   .chart-container {
-  /* 图表是单列布局 */
+    /* 图表是单列布局 */
     grid-template-columns: 1fr;
     justify-items: center;
   }
+
   .chart-item-shadow {
     width: 80%;
     left: 0;
   }
 }
-@media screen and (max-width: 600px) {
- .statistic-card-container {
+
+@media screen and (width <= 600px) {
+  .statistic-card-container {
     flex-direction: column;
   }
- .statistic-card {
+
+  .statistic-card {
     width: 100%;
     height: 75px;
     padding: 1vw;
     margin-bottom: 10px;
     font-size: 6vw;
   }
+
   .count-number {
     font-size: 6vw;
   }
+
   .chart-container {
     grid-template-columns: 1fr;
     justify-items: center;
   }
+
   .chart-item-shadow {
     width: 80%;
     left: 0;

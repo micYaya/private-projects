@@ -1,5 +1,10 @@
 <template>
-  <div v-if="isAddVisible" class="modal-overlay" @click.self="closeModal" style="z-index: 99;">
+  <div
+    v-if="isAddVisible"
+    class="modal-overlay"
+    style="z-index: 99"
+    @click.self="closeModal"
+  >
     <div class="modal">
       <div class="modal-header">
         <span>添加任务</span>
@@ -9,17 +14,23 @@
         <form>
           <div class="form-item">
             <label>*设备编号</label>
-            <el-input 
-              v-model="taskInfo.deviceId" 
+            <el-input
+              v-model="taskInfo.deviceId"
               placeholder="请输入设备编号"
-              style="width: 300px;"
-            ></el-input>
+              style="width: 300px"
+            />
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <el-button type="primary" @click="saveTask" :disabled="!taskInfo.deviceId">保存</el-button>
-        <el-button @click="resetForm">重置</el-button>
+        <el-button
+          type="primary"
+          :disabled="!taskInfo.deviceId"
+          @click="saveTask"
+        >
+          保存
+        </el-button>
+        <el-button @click="resetForm"> 重置 </el-button>
       </div>
     </div>
   </div>
@@ -33,7 +44,7 @@ import { ElMessage } from 'element-plus';
 const props = defineProps({
   isAddVisible: {
     type: Boolean,
-    default: false
+    default: false,
   },
 });
 
@@ -46,7 +57,7 @@ const taskInfo = ref({
   deviceId: '',
   startTime: null,
   endTime: null,
-  status: '未开始'
+  status: '未开始',
 });
 
 const resetForm = () => {
@@ -54,7 +65,7 @@ const resetForm = () => {
     deviceId: '',
     startTime: null,
     endTime: null,
-    status: '未开始'
+    status: '未开始',
   };
 };
 
@@ -63,9 +74,9 @@ const saveTask = async () => {
     // 检查设备编号是否存在(.data与无.data)
     // const deviceResponse = await api.get(`/api/devices/${taskInfo.value.deviceId}`);
     const deviceResponse = await checkDeviceExists(taskInfo.value.deviceId);
-    
+
     // 检查返回数据中的error字段
-    if (deviceResponse.error) { 
+    if (deviceResponse.error) {
       ElMessage.error(deviceResponse.error);
       return;
     }
@@ -89,5 +100,5 @@ const saveTask = async () => {
 </script>
 
 <style scoped>
-@import '../modal.less';
+@import url('../modal.less');
 </style>
