@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { useLoginStore } from '@/store/index';
 import api from '@/api/api';
@@ -99,7 +99,8 @@ if (user?.role === 'admin') {
 // };
 
 const router = createRouter({
-  history: createWebHistory(),
+  // history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: routes,
 });
 

@@ -12,7 +12,8 @@
     "lint:fix": "eslint --ext .js,.vue src --fix",
     "lint:style": "stylelint \"src/**/*.{css,less,vue}\"",
     "lint:style:fix": "stylelint \"src/**/*.{css,less,vue}\" --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -40,6 +41,7 @@
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-vue": "^9.33.0",
+    "gh-pages": "^6.3.0",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "less": "^4.2.2",

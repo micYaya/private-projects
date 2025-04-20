@@ -9,6 +9,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/private-projects/',
   plugins: [
     vue(),
     viteCompression({
@@ -17,7 +18,7 @@ export default defineConfig({
     }),
     visualizer({
       // 插件配置项
-      open: true, // 打包完成后自动打开浏览器查看报告（开发环境建议开启，生产环境可关闭）
+      open: false, // 打包完成后自动打开浏览器查看报告（开发环境建议开启，生产环境可关闭）
       filename: 'dist/stats.html', // 报告文件保存路径（默认在 dist 目录下）
       title: 'Vite Bundle Analysis',
       gzipSize: true, // 显示 Gzip 压缩后的文件大小
