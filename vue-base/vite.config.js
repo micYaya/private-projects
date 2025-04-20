@@ -52,12 +52,12 @@ export default defineConfig({
       drop: ['console', 'debugger'] // 更直观的语法
     },
     rollupOptions: {  // 代码分割
-      external: ['vue', 'element-plus'],
+      // external: ['vue', 'element-plus'],
       output: {
-        globals: {
-          vue: 'Vue',
-          'element-plus': 'ElementPlus',
-        },
+        // globals: {
+        //   vue: 'Vue',
+        //   'element-plus': 'ElementPlus',
+        // },
         manualChunks(id) {
           if (id.includes('node_modules')) {
             // 拆分 Vue 核心库（vue、vue-router、pinia）
