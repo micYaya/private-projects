@@ -4,7 +4,8 @@ import { jwtDecode } from 'jwt-decode';
 import { useLoginStore } from '@/store/index';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:3000', // 后端服务器地址
+  // baseURL: 'http://127.0.0.1:3000', // 后端服务器地址
+  baseURL: 'http://192.168.2.119:3000', // 局域网内的 IP 地址
   timeout: 30000,
   // withCredentials: true // 允许携带跨域请求的 Cookie
 });
