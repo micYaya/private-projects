@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
@@ -39,10 +40,14 @@ app.use(userRouter);
 
 // 创建数据库连接池
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '123456',
-    database: 'device_management'
+    // host: 'localhost',
+    // user: 'root',
+    // password: '123456',
+    // database: 'device_management'
+    host: process.env.DB_HOST, 
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD, 
+    database: process.env.DB_NAME
 });
 
 // 获取所有设备信息
