@@ -1,8 +1,9 @@
+require('dotenv').config();
 const OpenAI = require('openai');
 
 // API相关配置
-const API_KEY = 'c496eaaf-cfa4-41d5-944d-c8a5f8655912';
-const ENDPOINT_ID = 'ep-20250316222521-2f4j2';
+const API_KEY = process.env.API_KEY;
+const ENDPOINT_ID = process.env.ENDPOINT_ID;
 
 // 初始化 OpenAI 客户端
 const openai = new OpenAI({

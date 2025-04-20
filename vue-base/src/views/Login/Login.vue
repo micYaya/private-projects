@@ -268,9 +268,13 @@ const handleVerifyCodeLogin = async () => {
         );
         if (result.code === 0) {
           const user = result.data;
-          const userinfo = { user: user.nickname };
-          loginStore.setUserInfo(userinfo);
+          // const userinfo = { user: user.nickname };
+          loginStore.setUserInfo(user.nickname, user.role);
           loginStore.setPhoneNumber(smsForm.value.phone);
+          const userinfo = {
+            username: user.nickname,
+            role: user.role,
+          };
 
           // 存储两个令牌、用户信息和rememberMe
           const { accessToken, refreshToken } = result.data;

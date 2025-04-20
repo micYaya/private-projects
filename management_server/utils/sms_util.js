@@ -1,3 +1,4 @@
+require('dotenv').config(); // 加载环境变量
 var md5 = require('blueimp-md5')
 var moment = require('moment')
 var Base64 = require('js-base64').Base64;
@@ -22,10 +23,10 @@ exports.randomCode = randomCode;
 向指定号码发送指定验证码
  */
 function sendCode(phone, code, callback) {
-    var ACCOUNT_SID = '2c94811c946f6bfb0195d2d0c3d439d5';
-    var AUTH_TOKEN = '75ef0ae25cea4c0e97fd79b4a47f7947';
+    var ACCOUNT_SID = process.env.ACCOUNT_SID;
+    var AUTH_TOKEN = process.env.AUTH_TOKEN;
     var Rest_URL = 'https://app.cloopen.com:8883';
-    var AppID = '2c94811c946f6bfb0195d2d0c58a39dc';
+    var AppID = process.env.APP_ID;
     //1. 准备请求url
     /*
      1.使用MD5加密（账户Id + 账户授权令牌 + 时间戳）。其中账户Id和账户授权令牌根据url的验证级别对应主账户。
