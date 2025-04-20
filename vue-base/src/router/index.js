@@ -2,17 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { useLoginStore } from '@/store/index';
 import api from '@/api/api';
-import { jwtDecode } from 'jwt-decode'; // 引入 jwt-decode 库来解析 JWT 令牌
+import { jwtDecode } from 'jwt-decode'; // 解析JWT令牌
 // 从 @/views/XXX 路径导入XXX组件。@指向src目录
 import Login from '@/views/Login/Login.vue';
 import Home from '@/views/Home/Index.vue';
-// import origin from '@/views/Home/origin.vue';
-// import DeviceList from '@/views/Device/DeviceList.vue';
-// import TaskList from '@/views/Task/TaskList.vue';
-// import ItemList from '@/views/Task/Items/ItemList.vue';
-// import ResultList from '@/views/Result/ResultList.vue';
 import ReportList from '@/views/Report/ReportList.vue';
-// import Statistic from '@/views/Statistic/Statistic.vue';
 import UserManage from '@/views/UserManage/UserManage.vue';
 
 // 存储路由配置信息
@@ -45,43 +39,36 @@ const routes = [
       {
         path: '',
         name: 'origin',
-        // component: origin
         component: () => import('@/views/Home/origin.vue'),
       },
       {
         path: 'device-info',
         name: 'device-info',
-        // component: DeviceList
         component: () => import('@/views/Device/DeviceList.vue'),
       },
       {
         path: 'task-info',
         name: 'task-info',
-        // component: TaskList
         component: () => import('@/views/Task/TaskList.vue'),
       },
       {
         path: 'item-info/:taskId',
         name: 'item-info',
-        // component: ItemList
         component: () => import('@/views/Task/Items/ItemList.vue'),
       },
       {
         path: 'result-info',
         name: 'result-info',
-        // component: ResultList
         component: () => import('@/views/Result/ResultList.vue'),
       },
       {
         path: 'report-info',
         name: 'report-info',
         component: ReportList,
-        // component: () => import('@/views/Report/ReportList.vue')
       },
       {
         path: 'statistic-info',
         name: 'statistic-info',
-        // component: Statistic
         component: () => import('@/views/Statistic/Statistic.vue'),
       },
     ],

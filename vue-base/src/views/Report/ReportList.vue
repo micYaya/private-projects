@@ -11,7 +11,7 @@
         <el-input
           v-model="searchDeviceId"
           placeholder="请输入设备编号"
-          style="width: 300px; margin-right: 10px"
+          style="width: 250px; margin: 10px 0;"
           @keyup.enter="searchReports"
         />
         <el-button type="primary" @click="searchReports"> 搜索 </el-button>
@@ -45,7 +45,7 @@
             {{ formatDate(scope.row.inspectionDate) }}
           </template>
         </el-table-column>
-        <el-table-column prop="endTime" label="实验结束时间" width="260">
+        <el-table-column prop="endTime" label="实验结束时间" width="250">
           <template #default="scope">
             {{ formatDate(scope.row.endTime) }}
           </template>

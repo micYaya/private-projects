@@ -10,7 +10,8 @@
         :model="query"
         style="display: flex; justify-items: center"
       >
-        <div class="form-actions">
+        <div class="search-filter">
+          <div class="filter">
           <el-form-item label="角色">
             <el-input
               v-model="query.nickname"
@@ -25,6 +26,7 @@
               <el-option label="否" value="user" />
             </el-select>
           </el-form-item>
+        </div>
           <el-button type="primary" @click="applyFilter">搜索</el-button>
         </div>
       </el-form>
@@ -44,14 +46,15 @@
         :header-cell-style="{ textAlign: 'center' }"
         border
       >
-        <el-table-column prop="id" label="Id" width="80" />
-        <el-table-column prop="nickname" label="角色" />
+        <el-table-column prop="id" label="Id" width="200" />
+        <el-table-column prop="nickname" label="角色" width="150" />
         <el-table-column
           prop="role"
           label="角色名称"
           :formatter="formatRoleName"
+          width="250"
         />
-        <el-table-column label="超级管理员">
+        <el-table-column label="超级管理员" width="200">
           <template #default="{ row }">
             <el-tag :type="row.role === 'admin' ? 'success' : 'danger'">
               {{ row.role === 'admin' ? '是' : '否' }}
@@ -61,9 +64,10 @@
         <el-table-column
           prop="createTime"
           label="创建时间"
+          width="330"
           :formatter="formatTime"
         />
-        <el-table-column label="操作" width="260" fixed="right">
+        <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" text @click="openDialog(row)"
               >编辑</el-button
@@ -228,14 +232,14 @@ onMounted(fetchData);
 :deep(.el-select) {
   --el-select-width: 120px;
 }
-.form-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.search-filter {
+  margin-top: 0;
+  .filter{
+    margin-top: 18px;
+  }
 }
-
 @media screen and (max-width: 700px) {
-  .form-actions {
+  .search-filter {
     flex-direction: column; /* 垂直排列 */
     align-items: flex-start;
     margin: 10px;

@@ -339,6 +339,7 @@ onMounted(() => {
 
 @media screen and (width <= 600px) {
   .statistic-card-container {
+    margin-right: 18px;
     flex-direction: column;
   }
 

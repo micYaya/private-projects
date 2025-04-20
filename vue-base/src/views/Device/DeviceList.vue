@@ -12,7 +12,7 @@
         <el-input
           v-model="searchKeyword"
           placeholder="请输入设备名称"
-          style="width: 300px; margin-right: 10px"
+          style="width: 250px; margin: 10px 0;"
           @keyup.enter="searchDevices"
         />
         <el-button type="primary" @click="searchDevices"> 搜索 </el-button>

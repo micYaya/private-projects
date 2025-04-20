@@ -241,16 +241,16 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 import { format } from 'date-fns';
-// const props = defineProps({
-//   reportInfo: {
-//     type: Object,
-//     default: () => ({}),
-//   },
-//   isViewVisible: {
-//     type: Boolean,
-//     default: false,
-//   },
-// });
+const props = defineProps({
+  reportInfo: {
+    type: Object,
+    default: () => ({}),
+  },
+  isViewVisible: {
+    type: Boolean,
+    default: false,
+  },
+});
 const emits = defineEmits(['close']);
 
 const closeModal = () => {
@@ -268,7 +268,7 @@ const formatDate = (dateStr) => {
 @import url('../modal.less');
 
 .modal {
-  width: 800px;
+  width: 1000px;
   height: 600px;
   overflow: auto;
 }

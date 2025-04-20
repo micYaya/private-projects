@@ -7,5 +7,6 @@
 <style lang="less" scoped>
 p {
   font-size: 30px;
+  margin-right: 18px;
 }
 </style>

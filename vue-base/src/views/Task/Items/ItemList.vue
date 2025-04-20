@@ -18,7 +18,7 @@
         <el-input
           v-model="searchKeyword"
           placeholder="请输入项目名称"
-          style="width: 300px; margin-right: 10px"
+          style="width: 250px; margin: 10px 0;"
           @keyup.enter="searchItems"
         />
         <el-button type="primary" @click="searchItems"> 搜索 </el-button>
