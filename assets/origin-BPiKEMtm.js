@@ -1,0 +1,1 @@
+import{createElementBlock as o,openBlock as r}from"vue";import{_ as e}from"./index-DjiLuGwl.js";import"./vue-core-C2r4m7CJ.js";import"element-plus";const t={};function c(n,_){return r(),o("p",null,"欢迎来到互感器二次压降检测仪检定系统！")}const m=e(t,[["render",c],["__scopeId","data-v-bf9afa78"]]);export{m as default};
