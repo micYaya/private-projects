@@ -38,15 +38,17 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  // 开发环境启用histor路由支持
+  // 开发环境启用history路由支持
   server: {
     historyApiFallback: true,
   },
   // devServer: {
   //   proxy: {
   //     '/api': {
-  //       target: 'http://localhost:3000',
-  //       changeOrigin: true
+  //       target: 'http://192.168.2.119:3000', // 后端地址
+  //       changeOrigin: true,
+  //       secure: false, // 允许代理到HTTP地址（关闭HTTPS校验）
+  //       ws: true
   //     }
   //   }
   // },
