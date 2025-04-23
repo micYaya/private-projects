@@ -38,6 +38,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // 开发环境启用histor路由支持
+  server: {
+    historyApiFallback: true,
+  },
   // devServer: {
   //   proxy: {
   //     '/api': {

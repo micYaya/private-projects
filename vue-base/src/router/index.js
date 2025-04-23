@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';  // createWebHistory
 import { ElMessageBox } from 'element-plus';
 import { useLoginStore } from '@/store/index';
 import api from '@/api/api';
