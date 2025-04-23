@@ -1,0 +1,1 @@
+import{_ as e}from"./index-C-2LZmHF.js";import{c as o,o as c}from"./vue-core-ejNiufTe.js";const r={};function t(a,n){return c(),o("p",null,"欢迎来到互感器二次压降检测仪检定系统！")}const f=e(r,[["render",t],["__scopeId","data-v-bf9afa78"]]);export{f as default};
