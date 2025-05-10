@@ -4,12 +4,10 @@ var moment = require('moment')
 var Base64 = require('js-base64').Base64;
 var request = require('request');
 
-/*
- 生成指定长度的随机数
- */
+// 生成指定长度的随机数
 function randomCode(length) {
     var chars = ['0','1','2','3','4','5','6','7','8','9'];
-    var result = ""; //统一改名: alt + shift + R
+    var result = "";
     for(var i = 0; i < length ; i ++) {
         var index = Math.ceil(Math.random()*9);
         result += chars[index];
@@ -19,9 +17,7 @@ function randomCode(length) {
 // console.log(randomCode(6));
 exports.randomCode = randomCode;
 
-/*
-向指定号码发送指定验证码
- */
+// 向指定号码发送指定验证码
 function sendCode(phone, code, callback) {
     var ACCOUNT_SID = process.env.ACCOUNT_SID;
     var AUTH_TOKEN = process.env.AUTH_TOKEN;
@@ -63,7 +59,7 @@ function sendCode(phone, code, callback) {
     }
 
     //4. 发送请求, 并得到返回的结果, 调用callback
-      // callback(true);
+    // callback(true);
     request({
         method : 'POST',
         url : url,

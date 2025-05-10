@@ -63,7 +63,6 @@ onUnmounted(() => {
 
 const loginout = async () => {
   try {
-    // 使用 Element Plus 的确认弹窗
     await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -72,7 +71,6 @@ const loginout = async () => {
     loginStore.logout();
     router.push('/login');
   } catch (error) {
-    // 用户取消操作时的处理
     console.log('用户取消退出', error);
   }
 };

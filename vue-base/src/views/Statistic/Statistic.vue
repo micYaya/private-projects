@@ -74,28 +74,21 @@ const pieChartOption = ref({});
 // 获取统计数据
 const fetchStatistics = async () => {
   try {
+    // 异步请求并行化，优化加载时间
+    const [deviceRes, taskRes, itemRes, resultRes] = await Promise.all([
+      getDeviceList(),
+      getTasks(),
+      getInspectionItems(),
+      getResults(),
+    ]);
+
     // 设备数量
-    // const deviceRes = await api.get('/api/devices');
-    // statisticCounts.value.device = deviceRes.data.length;
-    const deviceRes = await getDeviceList();
     statisticCounts.value.device = deviceRes.length;
-
     // 任务数量
-    // const taskRes = await api.get('/api/tasks');
-    // statisticCounts.value.task = taskRes.data.length;
-    const taskRes = await getTasks();
     statisticCounts.value.task = taskRes.length;
-
     // 实验项目数量
-    // const itemRes = await api.get('/api/inspection_items');
-    // statisticCounts.value.item = itemRes.data.length;
-    const itemRes = await getInspectionItems();
     statisticCounts.value.item = itemRes.length;
-
     // 结果数量
-    // const resultRes = await api.get('/api/results');
-    // statisticCounts.value.result = resultRes.data.length;
-    const resultRes = await getResults();
     statisticCounts.value.result = resultRes.length;
 
     // 已完成任务设备占比
@@ -106,7 +99,6 @@ const fetchStatistics = async () => {
     // 近一个月送检设备统计
     const now = dayjs();
     const oneMonthAgo = now.subtract(1, 'month').format('YYYY-MM-DD');
-    // const inspectionRes = await api.get(`/api/devices?inspectionDate_gte=${oneMonthAgo}`);
     const inspectionRes = await getDevicesMonth(oneMonthAgo);
     const dailyData = {};
     inspectionRes.forEach((device) => {
@@ -131,11 +123,6 @@ const fetchStatistics = async () => {
         name: project,
       }),
     );
-
-    // // 绘制图表
-    // drawRingChart();
-    // drawLineChart();
-    // drawPieChart();
 
     // 设置图表配置项
     ringChartOption.value = {
@@ -190,68 +177,6 @@ const fetchStatistics = async () => {
     console.error('获取统计数据失败', error);
   }
 };
-
-// // 环图
-// const drawRingChart = () => {
-//   const chart = echarts.init(document.getElementById('ring-chart'));
-//   chart.setOption({
-//     title: {
-//       text: '已完成任务设备占比',
-//       left: 'center'
-//     },
-//     series: [{
-//       type: 'pie',
-//       radius: ['50%', '70%'],
-//       label: {
-//         formatter: `{c} (${completedDeviceRatio.value.toFixed(1)}%)`
-//       },
-//       data: [{
-//         value: completedDeviceRatio.value,
-//         name: '已完成任务设备'
-//       }, {
-//         value: 100 - completedDeviceRatio.value,
-//         name: '未完成任务设备'
-//       }]
-//     }]
-//   });
-// };
-
-// // 折线图
-// const drawLineChart = () => {
-//   const chart = echarts.init(document.getElementById('line-chart'));
-//   const dates = dailyInspectionData.value.map(item => item.date);
-//   const counts = dailyInspectionData.value.map(item => item.count);
-
-//   chart.setOption({
-//     title: {
-//       text: '近一个月送检设备数量',
-//       left: 'center'
-//     },
-//     xAxis: {
-//       data: dates
-//     },
-//     yAxis: {},
-//     series: [{
-//       data: counts,
-//       type: 'line'
-//     }]
-//   });
-// };
-
-// // 饼图
-// const drawPieChart = () => {
-//   const chart = echarts.init(document.getElementById('pie-chart'));
-//   chart.setOption({
-//     title: {
-//       text: '实验项目分类统计',
-//       left: 'center'
-//     },
-//     series: [{
-//       type: 'pie',
-//       data: projectCategoryData.value
-//     }]
-//   });
-// };
 
 onMounted(() => {
   fetchStatistics();

@@ -67,7 +67,7 @@
           width="330"
           :formatter="formatTime"
         />
-        <el-table-column label="操作" width="220" fixed="right">
+        <el-table-column label="操作" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" text @click="openDialog(row)"
               >编辑</el-button

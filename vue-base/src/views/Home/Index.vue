@@ -28,7 +28,6 @@ onBeforeUnmount(() => {
 
 <style lang="less" scoped>
 .home-container {
-  /* 设置弹性布局，使子元素灵活适应空间 */
   display: flex;
   flex-direction: row;
   width: 100%;

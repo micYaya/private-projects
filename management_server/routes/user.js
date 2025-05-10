@@ -5,7 +5,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 
 const userRouter = express.Router();
-const usersFile = path.join(__dirname, './db/users.json');
+const usersFile = path.join(__dirname, '../db/users.json');
 
 // 读取用户数据
 function readUsers() {
@@ -20,7 +20,7 @@ function writeUsers(data) {
 
 // 搜索获取所有用户列表
 userRouter.get('/api/users', (req, res) => {
-    console.log(1);
+    // console.log(1);
     const users = readUsers();
     const result = users.map(({ id, phone, createTime, nickname, role }) => ({
       id,

@@ -1,4 +1,3 @@
-import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -6,86 +5,101 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import viteCompression from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
+import path from 'path';
+import cdnImport from 'vite-plugin-cdn-import';
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/private-projects/',
-  plugins: [
-    vue(),
-    viteCompression({
-      algorithm: 'brotliCompress',  // 开启Brotli压缩，减少文件体积
-      threshold: 10240, // 超过 10kB 的文件进行压缩
-    }),
-    visualizer({
-      // 插件配置项
-      open: false, // 打包完成后自动打开浏览器查看报告（开发环境建议开启，生产环境可关闭）
-      filename: 'dist/stats.html', // 报告文件保存路径（默认在 dist 目录下）
-      title: 'Vite Bundle Analysis',
-      gzipSize: true, // 显示 Gzip 压缩后的文件大小
-      brotliSize: true, // 显示 Brotli 压缩后的文件大小
-      template: 'treemap', // 可视化模板，可选 'treemap'（树状图）、'sunburst'（旭日图）、'network'（网络图）
-      // sourcemap: true, // 是否包含源映射（体积大时可能卡顿，可选）
-    }),
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    }),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
-  },
-  // 开发环境启用history路由支持
-  server: {
-    historyApiFallback: true,
-  },
-  // devServer: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://192.168.2.119:3000', // 后端地址
-  //       changeOrigin: true,
-  //       secure: false, // 允许代理到HTTP地址（关闭HTTPS校验）
-  //       ws: true
-  //     }
-  //   }
-  // },
-  build: {
-    minify: 'esbuild',  // 代码压缩
-    esbuild: {
-      drop: ['console', 'debugger'] // 更直观的语法
-    },
-    rollupOptions: {  // 代码分割
-      // external: ['vue', 'element-plus'],
-      output: {
-        // globals: {
-        //   vue: 'Vue',
-        //   'element-plus': 'ElementPlus',
-        // },
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            // 拆分 Vue 核心库（vue、vue-router、pinia）
-            if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
-              return 'vue-core';
-            }
-            // 拆分 Element Plus
-            if (id.includes('element-plus')) {
-              return 'element-plus';
-            }
-            // 拆分 Axios 等工具库
-            if (id.includes('axios') || id.includes('lodash')) {
-              return 'utils-libs';
-            }
-            // 其他依赖统一放入 vendor
-            return 'vendor';
-          }
-        },
-        // 分类
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
+export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production';
+
+  return {
+    base: isProduction ? '/private-projects/' : '/', // 根据环境设置基础路径
+    cacheDir: './node_modules/.vite', // 指定缓存目录
+    plugins: [
+      vue(),
+      // 配置 CDN 插件
+      cdnImport({
+        // 仅在生产环境下启用
+        prodUrl: isProduction
+          ? 'https://cdn.jsdelivr.net/npm/{name}@{version}/{path}'
+          : '',
+        modules: [
+          {
+            name: 'vue',
+            var: 'Vue', // Vue 的全局变量名
+            path: 'dist/vue.global.prod.js', // Vue 的生产环境路径
+          },
+          {
+            name: 'element-plus',
+            var: 'ElementPlus', // Element Plus 的全局变量名
+            path: 'dist/index.full.min.js', // Element Plus 的生产环境路径
+          },
+        ],
+      }),
+      viteCompression({
+        algorithm: 'brotliCompress', // 开启 Brotli 压缩
+        threshold: 10240, // 超过 10kB 的文件进行压缩
+      }),
+      visualizer({
+        open: false, // 打包完成后自动打开浏览器查看报告
+        filename: 'dist/stats.html', // 报告文件保存路径
+        title: 'Vite Bundle Analysis',
+        gzipSize: true, // 显示 Gzip 压缩后的文件大小
+        brotliSize: true, // 显示 Brotli 压缩后的文件大小
+        template: 'treemap', // 可视化模板
+      }),
+      AutoImport({
+        resolvers: [ElementPlusResolver()],
+      }),
+      Components({
+        resolvers: [ElementPlusResolver()],
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
       },
     },
-  },
+    server: {
+      historyApiFallback: true, // 开发环境启用 history 路由支持
+    },
+    build: {
+      minify: isProduction ? 'esbuild' : false, // 生产环境使用esbuild压缩
+      esbuild: isProduction ? {
+            drop: ['console', 'debugger']
+          } : undefined,
+      rollupOptions: {
+        external: isProduction ? ['vue', 'element-plus'] : [], // 排除 Vue 和 Element Plus
+        output: {
+          globals: {
+            vue: 'Vue',
+            'element-plus': 'ElementPlus',
+          },
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              // 拆分 Vue 核心库（vue、vue-router、pinia）
+              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+                return 'vue-core';
+              }
+              // 拆分 Element Plus
+              if (id.includes('element-plus')) {
+                return 'element-plus';
+              }
+              if (id.includes('axios') || id.includes('lodash')) {
+                return 'utils-libs';
+              }
+              if (id.includes('echarts')) {
+                return 'echarts';
+              }
+              // 其他依赖统一放入 vendor
+              return 'vendor';
+            }
+          },
+          chunkFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+        cssCodeSplit: true, // 启用CSS代码分割
+      },
+    },
+  };
 });
